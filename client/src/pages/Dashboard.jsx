@@ -7,6 +7,7 @@ import TasksSummary from '../components/TasksSummary'
 import CreateProjectDialog from '../components/CreateProjectDialog'
 import { useUser } from '@clerk/clerk-react'
 import TableOverview from '../components/TableOverview'
+import TableOverviewd from '../components/TableOverviewd'
 
 const Dashboard = () => {
 
@@ -30,15 +31,14 @@ const Dashboard = () => {
 
             <StatsGrid />
 
-            <div className="grid lg:grid-cols-3 gap-8">
+            {/* <div className="max-w-6xl mx-auto px-4 md:px-0">
+                <TableOverviewd />
+            </div> */}
+            <div className="grid lg:grid-cols-3 gap-8 px-1">
                 <div className="lg:col-span-2 space-y-8">
                     <TableOverview />
-                    <RecentActivity />
                 </div>
-                <div>
-                    <TasksSummary />
-                </div>
-            </div>
+            </div> 
         </div>
     )
 }
