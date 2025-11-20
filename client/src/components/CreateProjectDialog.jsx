@@ -24,10 +24,8 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
         nama_php: "",
         rencana: "",
         realisasi: "",
-        //deviasi: "",
         kendala: false,
         keterangan: "",
-        //bulan: "JAN",
         
     });
 
@@ -46,6 +44,21 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
             const {data} = await api.post("/api/projects", {workspaceId: currentWorkspace.id, ...formData}, {headers: {Authorization: `Bearer ${await getToken()}`}});
             
             dispatch(addProject(data.project));
+
+            setFormData({
+                nama_proyek: "",
+                no_kontrak: "",
+                pelaksana_pekerjaan: "",
+                jangka_waktu: "",
+                nama_ppp: "",
+                nama_ppk: "",
+                nama_php: "",
+                rencana: "",
+                realisasi: "",
+                kendala: false,
+                keterangan: "",
+            })
+            toast.success(data.message);
             setIsDialogOpen(false);
         } catch (error) {
             toast.error(error?.response?.data?.message || error.message);         
