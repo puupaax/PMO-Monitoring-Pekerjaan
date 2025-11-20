@@ -18,7 +18,7 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
         nama_proyek: "",
         no_kontrak: "",
         pelaksana_pekerjaan: "",
-        jangka_waktu: 0,
+        jangka_waktu: "",
         nama_ppp: "",
         nama_ppk: "",
         nama_php: "",
@@ -28,7 +28,14 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
         kendala: false,
         keterangan: "",
         //bulan: "JAN",
+        
     });
+
+    const [errors, setErrors] = useState({
+        rencana: "",
+        realisasi: ""
+    });
+
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -158,26 +165,69 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm mb-1">Rencana</label>
-                            <input
-                                type="number"
-                                step="0.01"
-                                value={formData.rencana}
-                                onChange={(e) => setFormData({ ...formData, rencana: e.target.value })}
-                                className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
-                            />
+                            <div className="relative h-10">
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min={0}
+                                    max={100}
+                                    value={formData.rencana}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        let error = "";
+
+                                        if (val < 0) error = "Nilai tidak boleh kurang dari 0.";
+                                        if (val > 100) error = "Nilai tidak boleh lebih dari 100.";
+
+                                        setErrors({ ...errors, rencana: error });
+                                        setFormData({ ...formData, rencana: val });
+                                    }}
+                                    className={`w-full px-3 py-2 pr-10 rounded border 
+                                        ${errors.rencana 
+                                            ? "border-red-500 dark:border-red-500" 
+                                            : "border-zinc-300 dark:border-zinc-700"
+                                        } dark:bg-zinc-900`}
+                                />
+                                {errors.rencana && (
+                                    <p className="text-red-500 text-xs mt-1">{errors.rencana}</p>
+                                )}
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500">%</span>
+                            </div>
                         </div>
 
-                        <div>
+                        <div >
                             <label className="block text-sm mb-1">Realisasi</label>
-                            <input
-                                type="number"
-                                step="0.01"
-                                value={formData.realisasi}
-                                onChange={(e) => setFormData({ ...formData, realisasi: e.target.value })}
-                                className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
-                            />
+                            <div className="relative h-10">
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min={0}
+                                    max={100}
+                                    value={formData.realisasi}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        let error = "";
+
+                                        if (val < 0) error = "Nilai tidak boleh kurang dari 0.";
+                                        if (val > 100) error = "Nilai tidak boleh lebih dari 100.";
+
+                                        setErrors({ ...errors, realisasi: error });
+                                        setFormData({ ...formData, realisasi: val });
+                                    }}
+                                    className={`w-full px-3 py-2 pr-10 rounded border 
+                                        ${errors.realisasi 
+                                            ? "border-red-500 dark:border-red-500" 
+                                            : "border-zinc-300 dark:border-zinc-700"
+                                        } dark:bg-zinc-900`}
+                                />
+                                {errors.realisasi && (
+                                    <p className="text-red-500 text-xs mt-1">{errors.realisasi}</p>
+                                )}
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500">%</span>
+                            </div>
                         </div>
                     </div>
+
 
                     {/* KETERANGAN */}
                     <div>
