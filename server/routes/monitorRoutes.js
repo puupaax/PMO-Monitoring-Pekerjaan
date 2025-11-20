@@ -1,5 +1,5 @@
 import express from "express";
-import { getDataMonitor } from "../controllers/monitorController";
+import { getDataMonitor } from "../controllers/monitorController.js";
 
 const monitorRoutes= express.Router();
 

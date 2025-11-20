@@ -5,6 +5,7 @@ import mockData from "../assets/mockdata.json";
 
 import api from "../configs/api";
 import { useSelector } from "react-redux";
+import { useAuth } from "@clerk/clerk-react";
 
 const columnHelper = createColumnHelper();
 
@@ -132,11 +133,15 @@ const TableOverview = () => {
     const [data, setData] = useState([]);
     const [sorting, setSorting] = useState([]);
     const [globalFilter, setGlobalFilter] = useState("");
+    const { getToken } = useAuth();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await api.get("/api/monitoring"); 
+                const token = await getToken();
+                const res = await api.get("/api/monitor/", {
+                    headers: {Authorization: `Bearer ${token}`}
+                }); 
                 setData(res.data.monitors); 
             } catch (error) {
                 console.log("Error fetching monitoring:", error);

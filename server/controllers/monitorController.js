@@ -5,8 +5,7 @@ export const getDataMonitor = async (req, res) => {
         const { userId } = await req.auth();
 
         const user = await prisma.user.findUnique({
-            where: { id: userId },
-            select: { role: true }
+            where: { id: userId }
         });
 
         if (!user) {
