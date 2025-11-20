@@ -14,6 +14,21 @@ enum WorkspaceRole {
     MEMBER
 }
 
+enum Bulan{
+    Januari
+    Februari
+    Maret
+    April
+    Mei
+    Juni
+    Juli
+    Agustus
+    September
+    Oktober
+    November
+    Desember
+}
+
 enum TaskStatus {
     TODO
     IN_PROGRESS
@@ -53,10 +68,70 @@ model User {
     workspaces      WorkspaceMember[]
     projects        Project[]         @relation("ProjectOwner")
     tasks           Task[]            @relation("TaskAssignee")
+    Monitoring          Monitoring[]          @relation("ProjectOwner")
+    MonitoringHistory   MonitoringHistory[]   @relation("ProjectOwner")
+
     comments        Comment[]
     ownedWorkspaces Workspace[]
     ProjectMember   ProjectMember[]
     evidences       Evidence[]
+}
+
+model Monitoring {
+    id              String   @id @default(uuid())
+    nama_proyek     String
+    no_kontrak      String
+    pelaksana_pekerjaan   String
+    jangka_waktu    Int
+    nama_ppp        String
+    nama_ppk        String
+    nama_php        String
+    rencana         Decimal
+    realisasi       Decimal
+    deviasi         Decimal
+    kendala         Boolean
+    keterangan      String
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+    bulan           Bulan    
+
+    // FK 
+    team_lead         String        // <--- user id disimpan di sini
+    workspaceId       String        // <--- workspace id disimpan di sini
+
+    // Relasi
+    owner             User      @relation("ProjectOwner", fields: [team_lead], references: [id])
+    workspace         Workspace @relation(fields: [workspaceId], references: [id])  
+
+    history             MonitoringHistory[] 
+}
+
+model MonitoringHistory {
+    id              String   @id @default(uuid())
+
+    monitoring_id   String
+    monitoring      Monitoring @relation(fields: [monitoring_id], references: [id], onDelete: Cascade)
+    
+    nama_proyek     String
+    no_kontrak      String
+    pelaksana_pekerjaan   String
+    jangka_waktu    Int
+    nama_ppp        String
+    nama_ppk        String
+    nama_php        String
+    rencana         Decimal
+    realisasi       Decimal
+    deviasi         Decimal
+    kendala         Boolean
+    keterangan      String
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+    bulan           Bulan   
+    team_lead       String        // user id
+     workspaceId    String        // workspace id 
+
+    owner             User      @relation("ProjectOwner", fields: [team_lead], references: [id])
+    workspace         Workspace @relation(fields: [workspaceId], references: [id])
 }
 
 model Workspace {
@@ -72,6 +147,9 @@ model Workspace {
 
     members  WorkspaceMember[]
     projects Project[]
+    MonitoringHistory MonitoringHistory[]
+    Monitoring        Monitoring[]
+
     owner    User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 }
 

@@ -1,110 +1,218 @@
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
-import { Plus, Search, FolderOpen } from "lucide-react";
-import ProjectCard from "../components/ProjectCard";
-import CreateProjectDialog from "../components/CreateProjectDialog";
+import {
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    ResponsiveContainer,
+    PieChart,
+    Pie,
+    Cell
+} from "recharts";
+
+import {
+    CheckCircle,
+    Clock,
+    AlertTriangle,
+    Users,
+    ArrowRightIcon
+} from "lucide-react";
+
+// Colors for charts
+const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
+
+// Priority colors
+const PRIORITY_COLORS = {
+    LOW: "text-red-600 bg-red-200 dark:text-red-500 dark:bg-red-600",
+    MEDIUM: "text-blue-600 bg-blue-200 dark:text-blue-500 dark:bg-blue-600",
+    HIGH: "text-emerald-600 bg-emerald-200 dark:text-emerald-500 dark:bg-emerald-600",
+};
 
 export default function Projects() {
-    
-    const projects = useSelector(
-        (state) => state?.workspace?.currentWorkspace?.projects || []
-    );
+    // Ambil 1 project (misal current selected workspace project pertama)
+    const project = useSelector((state) => state.workspace.currentWorkspace?.projects?.[0]);
+    const tasks = useSelector((state) => project?.tasks || []);
 
-    const [filteredProjects, setFilteredProjects] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [filters, setFilters] = useState({
-        status: "ALL",
-        priority: "ALL",
-    });
+    const { stats, statusData, typeData, priorityData } = useMemo(() => {
+        const now = new Date();
+        const total = tasks.length;
 
-    const filterProjects = () => {
-        let filtered = projects;
+        const stats = {
+            total,
+            completed: 0,
+            inProgress: 0,
+            todo: 0,
+            overdue: 0,
+        };
 
-        if (searchTerm) {
-            filtered = filtered.filter(
-                (project) =>
-                    project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    project.description?.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-        }
+        const statusMap = { TODO: 0, IN_PROGRESS: 0, DONE: 0 };
+        const typeMap = { TASK: 0, BUG: 0, FEATURE: 0, IMPROVEMENT: 0, OTHER: 0 };
+        const priorityMap = { LOW: 0, MEDIUM: 0, HIGH: 0 };
 
-        if (filters.status !== "ALL") {
-            filtered = filtered.filter((project) => project.status === filters.status);
-        }
+        tasks.forEach((t) => {
+            if (t.status === "DONE") stats.completed++;
+            if (t.status === "IN_PROGRESS") stats.inProgress++;
+            if (t.status === "TODO") stats.todo++;
+            if (new Date(t.due_date) < now && t.status !== "DONE") stats.overdue++;
 
-        if (filters.priority !== "ALL") {
-            filtered = filtered.filter(
-                (project) => project.priority === filters.priority
-            );
-        }
+            if (statusMap[t.status] !== undefined) statusMap[t.status]++;
+            if (typeMap[t.type] !== undefined) typeMap[t.type]++;
+            if (priorityMap[t.priority] !== undefined) priorityMap[t.priority]++;
+        });
 
-        setFilteredProjects(filtered);
-    };
+        return {
+            stats,
+            statusData: Object.entries(statusMap).map(([k, v]) => ({
+                name: k.replace("_", " "),
+                value: v,
+            })),
+            typeData: Object.entries(typeMap)
+                .filter(([_, v]) => v > 0)
+                .map(([k, v]) => ({ name: k, value: v })),
+            priorityData: Object.entries(priorityMap).map(([k, v]) => ({
+                name: k,
+                value: v,
+                percentage: total > 0 ? Math.round((v / total) * 100) : 0,
+            })),
+        };
+    }, [tasks]);
 
-    useEffect(() => {
-        filterProjects();
-    }, [projects, searchTerm, filters]);
+    const completionRate =
+        stats.total ? Math.round((stats.completed / stats.total) * 100) : 0;
+
+    const metrics = [
+        {
+            label: "Completion Rate",
+            value: `${completionRate}%`,
+            color: "text-emerald-600 dark:text-emerald-400",
+            icon: <CheckCircle className="size-5 text-emerald-600 dark:text-emerald-400" />,
+            bg: "bg-emerald-200 dark:bg-emerald-500/10",
+        },
+        {
+            label: "Active Tasks",
+            value: stats.inProgress,
+            color: "text-blue-600 dark:text-blue-400",
+            icon: <Clock className="size-5 text-blue-600 dark:text-blue-400" />,
+            bg: "bg-blue-200 dark:bg-blue-500/10",
+        },
+        {
+            label: "Overdue Tasks",
+            value: stats.overdue,
+            color: "text-red-600 dark:text-red-400",
+            icon: <AlertTriangle className="size-5 text-red-600 dark:text-red-400" />,
+            bg: "bg-red-200 dark:bg-red-500/10",
+        },
+        {
+            label: "Team Size",
+            value: project?.members?.length || 0,
+            color: "text-purple-600 dark:text-purple-400",
+            icon: <Users className="size-5 text-purple-600 dark:text-purple-400" />,
+            bg: "bg-purple-200 dark:bg-purple-500/10",
+        },
+    ];
 
     return (
         <div className="space-y-6 max-w-6xl mx-auto">
             {/* Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-                <div>
-                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-1"> Projects </h1>
-                    <p className="text-gray-500 dark:text-zinc-400 text-sm"> Manage and track your projects </p>
-                </div>
-                <button onClick={() => setIsDialogOpen(true)} className="flex items-center px-5 py-2 text-sm rounded bg-gradient-to-br from-blue-500 to-blue-600 text-white hover:opacity-90 transition" >
-                    <Plus className="size-4 mr-2" /> New Project
-                </button>
-                <CreateProjectDialog isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
-            </div>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                Project Analytics
+            </h1>
+            <p className="text-gray-500 dark:text-zinc-400 text-sm">
+                Overview and analytics for your project
+            </p>
 
-            {/* Search and Filters */}
-            <div className="flex flex-col md:flex-row gap-4">
-                <div className="relative w-full max-w-sm">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-zinc-400 w-4 h-4" />
-                    <input onChange={(e) => setSearchTerm(e.target.value)} value={searchTerm} className="w-full pl-10 text-sm pr-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-400 focus:border-blue-500 outline-none" placeholder="Search projects..." />
-                </div>
-                <select value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm" >
-                    <option value="ALL">All Status</option>
-                    <option value="ACTIVE">Active</option>
-                    <option value="PLANNING">Planning</option>
-                    <option value="COMPLETED">Completed</option>
-                    <option value="ON_HOLD">On Hold</option>
-                    <option value="CANCELLED">Cancelled</option>
-                </select>
-                <select value={filters.priority} onChange={(e) => setFilters({ ...filters, priority: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm" >
-                    <option value="ALL">All Priority</option>
-                    <option value="HIGH">High</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="LOW">Low</option>
-                </select>
-            </div>
-
-            {/* Projects Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProjects.length === 0 ? (
-                    <div className="col-span-full text-center py-16">
-                        <div className="w-24 h-24 mx-auto mb-6 bg-gray-200 dark:bg-zinc-800 rounded-full flex items-center justify-center">
-                            <FolderOpen className="w-12 h-12 text-gray-400 dark:text-zinc-500" />
+            {/* Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {metrics.map((m, i) => (
+                    <div
+                        key={i}
+                        className="not-dark:bg-white dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-zinc-300 dark:border-zinc-800 rounded-lg p-6"
+                    >
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-zinc-600 dark:text-zinc-400 text-sm">{m.label}</p>
+                                <p className={`text-xl font-bold ${m.color}`}>{m.value}</p>
+                            </div>
+                            <div className={`p-2 rounded-md ${m.bg}`}>{m.icon}</div>
                         </div>
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                            No projects found
-                        </h3>
-                        <p className="text-gray-500 dark:text-zinc-400 mb-6 text-sm">
-                            Create your first project to get started
-                        </p>
-                        <button onClick={() => setIsDialogOpen(true)} className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mx-auto text-sm" >
-                            <Plus className="size-4" />
-                            Create Project
-                        </button>
                     </div>
-                ) : (
-                    filteredProjects.map((project) => (
-                        <ProjectCard key={project.id} project={project} />
-                    ))
-                )}
+                ))}
+            </div>
+
+            {/* Charts */}
+            <div className="grid lg:grid-cols-2 gap-6">
+                {/* Tasks by Status */}
+                <div className="not-dark:bg-white dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-zinc-300 dark:border-zinc-800 rounded-lg p-6">
+                    <h2 className="text-zinc-900 dark:text-white mb-4 font-medium">Tasks by Status</h2>
+                    <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={statusData}>
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+
+                {/* Tasks by Type */}
+                <div className="not-dark:bg-white dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-zinc-300 dark:border-zinc-800 rounded-lg p-6">
+                    <h2 className="text-zinc-900 dark:text-white mb-4 font-medium">Tasks by Type</h2>
+                    <ResponsiveContainer width="100%" height={300}>
+                        <PieChart>
+                            <Pie
+                                data={typeData}
+                                dataKey="value"
+                                nameKey="name"
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={100}
+                                label={({ name, value }) => `${name}: ${value}`}
+                            >
+                                {typeData.map((_, i) => (
+                                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                                ))}
+                            </Pie>
+                        </PieChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+
+            {/* Priority Breakdown */}
+            <div className="not-dark:bg-white dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-zinc-300 dark:border-zinc-800 rounded-lg p-6">
+                <h2 className="text-zinc-900 dark:text-white mb-4 font-medium">Tasks by Priority</h2>
+
+                <div className="space-y-4">
+                    {priorityData.map((p) => (
+                        <div key={p.name} className="space-y-2">
+                            <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-2">
+                                    <ArrowRightIcon
+                                        className={`size-3.5 ${PRIORITY_COLORS[p.name]}`}
+                                    />
+                                    <span className="capitalize text-zinc-900 dark:text-zinc-200">
+                                        {p.name.toLowerCase()}
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                    <span className="text-zinc-600 dark:text-zinc-400 text-sm">
+                                        {p.value} tasks
+                                    </span>
+                                    <span className="px-2 py-0.5 border border-zinc-400 dark:border-zinc-700 text-xs rounded text-zinc-600 dark:text-zinc-400">
+                                        {p.percentage}%
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="w-full bg-zinc-300 dark:bg-zinc-800 rounded-full h-1.5">
+                                <div
+                                    className={`h-1.5 rounded-full ${PRIORITY_COLORS[p.name]}`}
+                                    style={{ width: `${p.percentage}%` }}
+                                />
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
