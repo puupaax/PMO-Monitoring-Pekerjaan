@@ -15,11 +15,7 @@ export const createProject = async(req, res) => {
             nama_php,
             rencana,
             realisasi,
-            //deviasi,
-            // kendala,
             keterangan,
-            //bulan:,
-            // workspaceId,
             team_lead,
         } = req.body;
 
@@ -59,8 +55,6 @@ export const createProject = async(req, res) => {
                 deviasi,
                 kendala,
                 keterangan,
-                // bulan, 
-                // workspaceId,
                 team_lead: userId,
             }
         })
@@ -80,8 +74,6 @@ export const createProject = async(req, res) => {
                 deviasi,
                 kendala,
                 keterangan,
-                // bulan, 
-                // workspaceId,
                 team_lead: userId,
             }
         })
