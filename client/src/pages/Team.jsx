@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { UsersIcon, Search, UserPlus, Shield, Activity } from "lucide-react";
 import InviteMemberDialog from "../components/InviteMemberDialog";
 import { useSelector } from "react-redux";
+import { useAuth } from "@clerk/clerk-react";
+
 
 const Team = () => {
 
@@ -11,6 +13,8 @@ const Team = () => {
     const [users, setUsers] = useState([]);
     const currentWorkspace = useSelector((state) => state?.workspace?.currentWorkspace || null);
     const projects = currentWorkspace?.projects || [];
+    const { getToken } = useAuth();
+
 
     const filteredUsers = users.filter(
         (user) =>
@@ -19,9 +23,25 @@ const Team = () => {
     );
 
     useEffect(() => {
-        setUsers(currentWorkspace?.members || []);
-        setTasks(currentWorkspace?.projects?.reduce((acc, project) => [...acc, ...project.tasks], []) || []);
-    }, [currentWorkspace]);
+        const fetchUsers = async () => {
+            try {
+                const token = await getToken(); // <--- AMBIL TOKEN
+
+                const res = await fetch("http://localhost:5000/api/users", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const data = await res.json();
+                console.log("API USERS:", data);
+                setUsers(data);
+            } catch (err) {
+                console.error("Failed to fetch users", err);
+            }
+        };
+
+        fetchUsers();
+    }, []);
 
     return (
         <div className="space-y-6 max-w-6xl mx-auto">
@@ -133,16 +153,16 @@ const Team = () => {
                                         >
                                             <td className="px-6 py-2.5 whitespace-nowrap flex items-center gap-3">
                                                 <img
-                                                    src={user.user.image}
-                                                    alt={user.user.name}
+                                                    src={user.image}
+                                                    alt={user.name}
                                                     className="size-7 rounded-full bg-gray-200 dark:bg-zinc-800"
                                                 />
                                                 <span className="text-sm text-zinc-800 dark:text-white truncate">
-                                                    {user.user?.name || "Unknown User"}
+                                                    {user?.name || "Unknown User"}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-2.5 whitespace-nowrap text-sm text-gray-500 dark:text-zinc-400">
-                                                {user.user.email}
+                                                {user.email}
                                             </td>
                                             <td className="px-6 py-2.5 whitespace-nowrap">
                                                 <span

@@ -12,6 +12,8 @@ import taskRouter from './routes/taskRoutes.js';
 import commentRouter from './routes/commentRoutes.js';
 import evidenceRouter from './routes/evidenceRoute.js';
 import weeklyRouter from './routes/weekproRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+
 import monitorRoutes from './routes/monitorRoutes.js';
 
 if (!process.env.CLERK_PUBLISHABLE_KEY) {
@@ -38,6 +40,7 @@ app.use("/api/tasks", protect, taskRouter)
 app.use("/api/comments", protect, commentRouter)
 app.use("/api/evidences", protect, evidenceRouter)
 app.use("/api/weekly-progress", protect, weeklyRouter)
+app.use("/api/users", protect, userRoutes);
 
 app.use("/api/monitor", protect, monitorRoutes)
 

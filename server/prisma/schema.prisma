@@ -64,6 +64,7 @@ model User {
     image     String   @default("")
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    role     String  @default("USER")
 
 
     Monitoring          Monitoring[]          @relation("ProjectOwner")
