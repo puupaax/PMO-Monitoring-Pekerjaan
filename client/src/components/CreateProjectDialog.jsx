@@ -12,7 +12,7 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
     const{getToken} = useAuth();
     const dispatch = useDispatch();
 
-    const { currentWorkspace } = useSelector((state) => state.workspace);
+    //const { currentWorkspace } = useSelector((state) => state.workspace);
 
     const [formData, setFormData] = useState({
         nama_proyek: "",
@@ -41,7 +41,7 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
         e.preventDefault();
         try {   
             setIsSubmitting(true)
-            const {data} = await api.post("/api/projects", {workspaceId: currentWorkspace.id, ...formData}, {headers: {Authorization: `Bearer ${await getToken()}`}});
+            const {data} = await api.post("/api/projects", {...formData}, {headers: {Authorization: `Bearer ${await getToken()}`}});
             
             dispatch(addProject(data.project));
 
@@ -87,11 +87,11 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
                 </button>
 
                 <h2 className="text-xl font-medium mb-1">Create Monitoring</h2>
-                {currentWorkspace && (
+                {/* {currentWorkspace && (
                     <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
                         Workspace: <span className="text-blue-600 dark:text-blue-400">{currentWorkspace.name}</span>
                     </p>
-                )}
+                )} */}
 
                 <form onSubmit={handleSubmit} className="max-h-[70vh] overflow-y-auto space-y-4 pr-4">
 
@@ -187,12 +187,6 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
                                     value={formData.rencana}
                                     onChange={(e) => {
                                         const val = e.target.value;
-                                        let error = "";
-
-                                        if (val < 0) error = "Nilai tidak boleh kurang dari 0.";
-                                        if (val > 100) error = "Nilai tidak boleh lebih dari 100.";
-
-                                        setErrors({ ...errors, rencana: error });
                                         setFormData({ ...formData, rencana: val });
                                     }}
                                     className={`w-full px-3 py-2 pr-10 rounded border 
@@ -264,7 +258,7 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
                         </button>
 
                         <button
-                            disabled={isSubmitting || !currentWorkspace}
+                            //disabled={isSubmitting || !currentWorkspace}
                             className="px-4 py-2 rounded bg-blue-600 text-white"
                         >
                             {isSubmitting ? "Saving..." : "Save Monitoring"}
