@@ -14,6 +14,7 @@ import evidenceRouter from './routes/evidenceRoute.js';
 import weeklyRouter from './routes/weekproRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 
+import monitorRoutes from './routes/monitorRoutes.js';
 
 if (!process.env.CLERK_PUBLISHABLE_KEY) {
     throw new Error('Missing Clerk Publishable Key');
@@ -41,7 +42,7 @@ app.use("/api/evidences", protect, evidenceRouter)
 app.use("/api/weekly-progress", protect, weeklyRouter)
 app.use("/api/users", protect, userRoutes);
 
-
+app.use("/api/monitor", protect, monitorRoutes)
 
 
 const PORT = process.env.PORT || 5000;

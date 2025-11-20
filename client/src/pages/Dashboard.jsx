@@ -6,6 +6,7 @@ import RecentActivity from '../components/RecentActivity'
 import TasksSummary from '../components/TasksSummary'
 import CreateProjectDialog from '../components/CreateProjectDialog'
 import { useUser } from '@clerk/clerk-react'
+import TableOverview from '../components/TableOverview'
 
 const Dashboard = () => {
 
@@ -31,7 +32,7 @@ const Dashboard = () => {
 
             <div className="grid lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
-                    <ProjectOverview />
+                    <TableOverview />
                     <RecentActivity />
                 </div>
                 <div>
