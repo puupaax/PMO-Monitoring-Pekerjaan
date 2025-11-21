@@ -54,6 +54,59 @@ model User {
     ProjectMember   ProjectMember[]
 }
 
+model Monitoring {
+    id              String   @id @default(uuid())
+    nama_proyek     String
+    no_kontrak      String
+    pelaksana_pekerjaan   String
+    jangka_waktu    Int
+    nama_ppp        String
+    nama_ppk        String
+    nama_php        String
+    rencana         Decimal @db.Decimal(10, 2)
+    realisasi       Decimal @db.Decimal(10, 2)
+    deviasi         Decimal @db.Decimal(10, 2)
+    kendala         Boolean
+    keterangan      String
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+    bulan           Bulan?    
+
+    // FK 
+    team_lead         String        // <--- user id disimpan di sini
+
+    // Relasi
+    owner             User      @relation("ProjectOwner", fields: [team_lead], references: [id])
+
+    history             MonitoringHistory[] 
+}
+
+model MonitoringHistory {
+    id              String   @id @default(uuid())
+
+    monitoring_id   String
+    monitoring      Monitoring @relation(fields: [monitoring_id], references: [id], onDelete: Cascade)
+    
+    nama_proyek     String
+    no_kontrak      String
+    pelaksana_pekerjaan   String
+    jangka_waktu    Int
+    nama_ppp        String
+    nama_ppk        String
+    nama_php        String
+    rencana         Decimal @db.Decimal(10, 2)
+    realisasi       Decimal @db.Decimal(10, 2)
+    deviasi         Decimal @db.Decimal(10, 2)
+    kendala         Boolean 
+    keterangan      String
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+    bulan           Bulan?   
+    team_lead       String        // user id
+
+    owner             User      @relation("ProjectOwner", fields: [team_lead], references: [id])
+}
+
 model Workspace {
     id          String   @id
     name        String

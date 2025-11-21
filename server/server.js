@@ -13,6 +13,7 @@
     import evidenceRouter from './routes/evidenceRoute.js';
     import weeklyRouter from './routes/weekproRoutes.js';
     import userRoutes from './routes/userRoutes.js';
+    import monitoringgraphRoutes from "./routes/monitoringgraphRoutes.js";
 
 import monitorRoutes from './routes/monitorRoutes.js';
 
@@ -54,6 +55,7 @@ import monitorRoutes from './routes/monitorRoutes.js';
     app.use("/api/evidences", protect, evidenceRouter)
     app.use("/api/weekly-progress", protect, weeklyRouter)
     app.use("/api/users", userRoutes);
+    app.use("/api/monitoring-history", monitoringgraphRoutes);
 
 app.use("/api/monitor", protect, monitorRoutes)
 

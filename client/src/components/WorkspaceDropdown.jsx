@@ -12,7 +12,7 @@ function WorkspaceDropdown() {
 
             {/* Title */}
             <h1 className="text-lg font-semibold text-gray-800 dark:text-white">
-                PMO Monitoring
+                NavMonitor
             </h1>
         </div>
     );

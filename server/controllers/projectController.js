@@ -28,8 +28,8 @@ export const createProject = async(req, res) => {
         //     return res.status(404).json({ message: "Workspace not found" });
         // }
 
-        const deviasi = Number(rencana) - Number(realisasi);
-        const kendala = deviasi > 0;
+        const deviasi = Number(realisasi) - Number(rencana);
+        const kendala = deviasi < 0;
 
         // if(!workspace.members.some((member)=> member.userId === userId && member.role === "ADMIN")){
         //     return res.status(403).json({ message: "You don't have permission to create projects in this workspace" });
