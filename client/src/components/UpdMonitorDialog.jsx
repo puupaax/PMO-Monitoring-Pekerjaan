@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { XIcon } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -7,7 +7,7 @@ import { useAuth } from "@clerk/clerk-react";
 import api from "../configs/api";
 import { addProject } from "../features/workspaceSlice";    
 
-const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
+const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSuccess }) => {
 
     const{getToken} = useAuth();
     const dispatch = useDispatch();
@@ -15,6 +15,7 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
     //const { currentWorkspace } = useSelector((state) => state.workspace);
 
     const [formData, setFormData] = useState({
+        id: "",
         nama_proyek: "",
         no_kontrak: "",
         pelaksana_pekerjaan: "",
@@ -37,14 +38,35 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    useEffect(() => {
+        if (isDialogOpen && projectData) {
+            console.log(projectData)
+
+            setFormData({
+                id: projectData.id || "",
+                nama_proyek: projectData.nama_proyek || "",
+                no_kontrak: projectData.no_kontrak || "",
+                pelaksana_pekerjaan: projectData.pelaksana_pekerjaan || "",
+                jangka_waktu: projectData.jangka_waktu || "",
+                nama_ppp: projectData.nama_ppp || "",
+                nama_ppk: projectData.nama_ppk || "",
+                nama_php: projectData.nama_php || "",
+                rencana: projectData.rencana || "",
+                realisasi: projectData.realisasi || "",
+                kendala: projectData.kendala || false,
+                keterangan: projectData.keterangan || "",
+            });
+        }
+    }, [isDialogOpen, projectData]);
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {   
             setIsSubmitting(true)
-            const {data} = await api.post("/api/projects", {...formData}, {headers: {Authorization: `Bearer ${await getToken()}`}});
+            const {data} = await api.put("/api/projects", {...formData}, {headers: {Authorization: `Bearer ${await getToken()}`}});
             
             dispatch(addProject(data.project));
-
             setFormData({
                 nama_proyek: "",
                 no_kontrak: "",
@@ -87,7 +109,7 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                     <XIcon className="size-5" />
                 </button>
 
-                <h2 className="text-xl font-medium mb-1">Create Monitoring</h2>
+                <h2 className="text-xl font-medium mb-1">Update Progress Monitoring</h2>
                 {/* {currentWorkspace && (
                     <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
                         Workspace: <span className="text-blue-600 dark:text-blue-400">{currentWorkspace.name}</span>
@@ -272,4 +294,4 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
     );
 };
 
-export default CreateProjectDialog;
+export default UpdMonitorDialog;

@@ -27,7 +27,7 @@ export const createProject = async(req, res) => {
         // if(!workspace) {
         //     return res.status(404).json({ message: "Workspace not found" });
         // }
-
+        // const bulan = (besok lanjutin)
         const deviasi = Number(rencana) - Number(realisasi);
         const kendala = deviasi > 0;
 
@@ -114,53 +114,90 @@ export const createProject = async(req, res) => {
 }
 
 // Update project
-// export const updateProject = async(req, res) => {
-//     try {
-//         const { userId } = await req.auth();
-//         const { id, workspaceId, description, name, status, start_date, end_date, progress, priority } = req.body;
-        
-//         // check if user has admin role for workspace
-//         const workspace = await prisma.workspace.findUnique({
-//             where: {id: workspaceId},
-//             include: {members: {include: {user: true}}}
-//         })
+export const updateProject = async(req, res) => {
+    try {
+        const {userId} = await req.auth();
+        const {
+            id,
+            nama_proyek,
+            no_kontrak,
+            pelaksana_pekerjaan,
+            jangka_waktu,
+            nama_ppp,
+            nama_ppk,
+            nama_php,
+            rencana,
+            realisasi,
+            keterangan,
+            team_lead,
+        } = req.body;
+        const deviasi = Number(rencana) - Number(realisasi);
+        const kendala = deviasi > 0;
 
-//         if(!workspace) {
-//             return res.status(404).json({ message: "Workspace not found" })
-//         }
+        const monitoring = await prisma.monitoring.update({
+            where: { id },
+            data: {
+                nama_proyek,
+                no_kontrak,
+                pelaksana_pekerjaan,
+                jangka_waktu,
+                nama_ppp,
+                nama_ppk,
+                nama_php,
+                rencana,
+                realisasi,
+                deviasi,
+                kendala,
+                keterangan,
+                team_lead: userId,
+            }
+        })
 
-//         if(!workspace.members.some((member)=> member.userId === userId && member.role === "ADMIN")){
-//             const project = await prisma.project.findUnique({
-//                 where: {id}
-//             })
+        const monitoringhistory = await prisma.monitoringHistory.create({
+            data: {
+                monitoring_id: monitoring.id,
+                nama_proyek,
+                no_kontrak,
+                pelaksana_pekerjaan,
+                jangka_waktu,
+                nama_ppp,
+                nama_ppk,
+                nama_php,
+                rencana,
+                realisasi,
+                deviasi,
+                kendala,
+                keterangan,
+                team_lead: userId,
+            }
+        })
 
-//             if(!project) {
-//                 return res.status(404).json({ message: "Project not found"})
-//             } else if(project.team_lead !== userId) {
-//                 return res.status(403).json({ message: "You don't have permission to update projects in this workspace" });
-//             }
-//         }
 
-//         const project = await prisma.project.update({
-//             where: {id},
-//             data: {
-//                 workspaceId,
-//                 description,
-//                 name,
-//                 status,
-//                 priority,
-//                 progress,
-//                 start_date: start_date ? new Date(start_date) : null,
-//                 end_date: end_date ? new Date(end_date) : null,
-//             }
-//         })
+        res.json({message: "Project updated successfully"})
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: error.code || error.message })
+    }
+}
 
-//         res.json({project, message: "Projectr updated successfully"})
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({ message: error.code || error.message })
-//     }
-// }
+export const deleteMonitor = async(req, res) => {
+    try {
+        const { userId } = await req.auth();
+        const { monitorId } = req.params;
+
+        await prisma.monitoringHistory.deleteMany({
+            where: { monitoring_id: monitorId }
+        });
+
+        await prisma.monitoring.delete({
+            where: { id: monitorId }
+        })
+        res.json({ message: "Monitoring deleted successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: error.code || error.message })
+    }
+}
 
 // // Add Member to Project
 // export const addMember = async(req, res) => {
