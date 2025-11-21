@@ -1,22 +1,12 @@
-import multer from "multer";
-import path from "path";
-import fs from "fs";
+// Upload middleware disabled for Vercel (no filesystem allowed)
 
-const uploadDir = "./uploads";
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
-}
-
-// Konfigurasi penyimpanan
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
+const upload = {
+    single: () => {
+        return (req, res, next) => {
+            req.file = null; // tidak ada file yang diproses
+            next();
+        };
     },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    },
-});
+};
 
-const upload = multer({ storage });
 export default upload;
