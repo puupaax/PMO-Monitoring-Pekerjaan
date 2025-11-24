@@ -178,7 +178,7 @@ export const updateProject = async(req, res) => {
 
         res.json({message: "Project updated successfully"})
     } catch (error) {
-        console.log(error);
+        //console.log(error);
         res.status(500).json({ message: error.code || error.message })
     }
 }
@@ -197,7 +197,7 @@ export const deleteMonitor = async(req, res) => {
         })
         res.json({ message: "Monitoring deleted successfully" });
     } catch (error) {
-        console.log(error);
+        //console.log(error);
         res.status(500).json({ message: error.code || error.message })
     }
 }

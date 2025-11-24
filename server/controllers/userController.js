@@ -49,16 +49,12 @@ export const updateUserRole = async (req, res) => {
 
 export const getMe = async (req, res) => {
     try {
-        console.log("🔥 req.auth di /me:", req.auth);
-
         const userId = req.auth?.userId;
-        console.log("🔥 userId:", userId);
 
         const user = await prisma.user.findUnique({
             where: { id: userId }
         });
 
-        console.log("🔥 user:", user);
 
         return res.status(200).json(user);
     } catch (error) {

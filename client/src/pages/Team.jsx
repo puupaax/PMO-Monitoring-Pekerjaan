@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { UsersIcon, Search, UserPlus, Shield, Activity } from "lucide-react";
-import InviteMemberDialog from "../components/InviteMemberDialog";
 import { useSelector } from "react-redux";
 import { useAuth } from "@clerk/clerk-react";
 import api from "../configs/api";
@@ -23,7 +22,7 @@ const Team = () => {
 
 
     useEffect(() => {
-        console.log("Current user dari API:", currentUser);
+        //console.log("Current user dari API:", currentUser);
     }, [currentUser]);
 
     const filteredUsers = users.filter((user) => {
@@ -43,7 +42,6 @@ const Team = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            console.log("API USERS:", data);
             setUsers(data);
 
         } catch (err) {
@@ -74,7 +72,7 @@ const Team = () => {
         try {
             const token = await getToken();
 
-            console.log("CALL:", `/api/users/${userId}/role`);
+            //console.log("CALL:", `/api/users/${userId}/role`);
 
             const res = await api.put(
                 `/api/users/${userId}/role`,
@@ -111,10 +109,6 @@ const Team = () => {
                 >
                     <UserPlus className="w-4 h-4 mr-2" /> Invite Member
                 </button> */}
-                <InviteMemberDialog
-                    isDialogOpen={isDialogOpen}
-                    setIsDialogOpen={setIsDialogOpen}
-                />
             </div>
 
             {/* Stats Cards */}

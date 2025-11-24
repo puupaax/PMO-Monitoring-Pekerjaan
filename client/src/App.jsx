@@ -4,8 +4,7 @@ import { Toaster } from "react-hot-toast";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
 import Team from "./pages/Team";
-import ProjectDetails from "./pages/ProjectDetails";
-import TaskDetails from "./pages/TaskDetails";
+
 
 const App = () => {
     return (
@@ -16,8 +15,6 @@ const App = () => {
                     <Route index element={<Dashboard />} />
                     <Route path="team" element={<Team />} />
                     <Route path="projects" element={<Projects />} />
-                    <Route path="projectsDetail" element={<ProjectDetails />} />
-                    <Route path="taskDetails" element={<TaskDetails />} />
                 </Route>
             </Routes>
         </>
