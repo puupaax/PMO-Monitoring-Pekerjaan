@@ -5,13 +5,9 @@
 
     import { serve } from "inngest/express";
     import { inngest, functions } from "./inngest/index.js"
-    import workspaceRouter from './routes/workspaceRoutes.js';
     import { protect } from './middlewares/authMiddleware.js';
     import projectRouter from './routes/projectRoutes.js';
-    import taskRouter from './routes/taskRoutes.js';
-    import commentRouter from './routes/commentRoutes.js';
-    import evidenceRouter from './routes/evidenceRoute.js';
-    import weeklyRouter from './routes/weekproRoutes.js';
+
     import userRoutes from './routes/userRoutes.js';
     import monitoringgraphRoutes from "./routes/monitoringgraphRoutes.js";
 
