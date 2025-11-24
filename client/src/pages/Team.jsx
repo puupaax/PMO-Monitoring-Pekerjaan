@@ -23,7 +23,7 @@ const Team = () => {
 
 
     useEffect(() => {
-        console.log("Current user dari API:", currentUser);
+        //console.log("Current user dari API:", currentUser);
     }, [currentUser]);
 
     const filteredUsers = users.filter((user) => {
@@ -43,7 +43,6 @@ const Team = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            console.log("API USERS:", data);
             setUsers(data);
 
         } catch (err) {
@@ -74,7 +73,7 @@ const Team = () => {
         try {
             const token = await getToken();
 
-            console.log("CALL:", `/api/users/${userId}/role`);
+            //console.log("CALL:", `/api/users/${userId}/role`);
 
             const res = await api.put(
                 `/api/users/${userId}/role`,
