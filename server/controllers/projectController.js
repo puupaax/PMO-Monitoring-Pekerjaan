@@ -131,8 +131,8 @@ export const updateProject = async(req, res) => {
             keterangan,
             team_lead,
         } = req.body;
-        const deviasi = Number(rencana) - Number(realisasi);
-        const kendala = deviasi > 0;
+        const deviasi = Number(realisasi) - Number(rencana);
+        const kendala = deviasi < 0;
 
         const monitoring = await prisma.monitoring.update({
             where: { id },

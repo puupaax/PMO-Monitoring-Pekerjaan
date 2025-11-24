@@ -60,6 +60,7 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
             })
             if (typeof onSuccess === "function") onSuccess();
             toast.success(data.message);
+            
             setIsDialogOpen(false);
         } catch (error) {
             toast.error(error?.response?.data?.message || error.message);         
