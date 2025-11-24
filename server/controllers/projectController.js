@@ -55,7 +55,7 @@ export const createProject = async(req, res) => {
                 deviasi,
                 kendala,
                 keterangan,
-                team_lead: userId,
+                team_lead: userId
             }
         })
 
@@ -74,7 +74,7 @@ export const createProject = async(req, res) => {
                 deviasi,
                 kendala,
                 keterangan,
-                team_lead: userId,
+                team_lead: userId
             }
         })
 
@@ -131,8 +131,17 @@ export const updateProject = async(req, res) => {
             keterangan,
             team_lead,
         } = req.body;
+        const now = new Date();
+        const bulanNum = now.getMonth(); 
+        const bulanArray = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ];
+
+        const bulan = bulanArray[bulanNum];
+
         const deviasi = Number(rencana) - Number(realisasi);
-        const kendala = deviasi > 0;
+        const kendala = deviasi < 0;
 
         const monitoring = await prisma.monitoring.update({
             where: { id },
@@ -150,6 +159,7 @@ export const updateProject = async(req, res) => {
                 kendala,
                 keterangan,
                 team_lead: userId,
+                bulan: bulan
             }
         })
 
@@ -169,6 +179,7 @@ export const updateProject = async(req, res) => {
                 kendala,
                 keterangan,
                 team_lead: userId,
+                bulan: bulan
             }
         })
 
