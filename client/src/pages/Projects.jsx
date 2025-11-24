@@ -1,111 +1,241 @@
-import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { Plus, Search, FolderOpen } from "lucide-react";
-import ProjectCard from "../components/ProjectCard";
-import CreateProjectDialog from "../components/CreateProjectDialog";
+// src/pages/Projects.jsx
+import { useEffect, useState, useMemo } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  LineChart,
+  Line,
+  CartesianGrid,
+} from "recharts";
+import { useAuth } from "@clerk/clerk-react";
+import api from "../configs/api";
+
+const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 export default function Projects() {
-    
-    const projects = useSelector(
-        (state) => state?.workspace?.currentWorkspace?.projects || []
+  const { getToken } = useAuth();
+
+  const [summary, setSummary] = useState(null);
+  const [deviasi, setDeviasi] = useState([]);
+  const [pie, setPie] = useState([]);
+  const [trends, setTrends] = useState([]);
+  const [selectedProject, setSelectedProject] = useState("ALL");
+  const [loading, setLoading] = useState(true);
+
+  const fetchAll = async () => {
+    try {
+      setLoading(true);
+      const token = await getToken();
+
+      const [sRes, dRes, pRes, tRes] = await Promise.all([
+        api.get("/api/monitoring-history/summary", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        api.get("/api/monitoring-history/deviasi", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        api.get("/api/monitoring-history/problem-pie", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        api.get("/api/monitoring-history/trends", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+
+      setSummary(sRes.data);
+      setDeviasi(dRes.data);
+      setPie(pRes.data);
+      setTrends(tRes.data);
+    } catch (err) {
+      console.error("fetchAll error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAll();
+  }, []);
+
+  // top N untuk bar chart
+  const topDeviasi = useMemo(() => {
+    // Jika ingin sort berdasarkan deviasi absolut descending:
+    return [...deviasi]
+      .sort((a, b) => Math.abs(b.deviasi) - Math.abs(a.deviasi))
+    //   .slice(0, 8);
+  }, [deviasi]);
+
+  // cari nilai absolut maksimal untuk scaling warna gradasi
+  const maxAbsDeviasi = useMemo(() => {
+    if (topDeviasi.length === 0) return 1;
+    return Math.max(
+      1,
+      ...topDeviasi.map((d) => Math.abs(Number(d.deviasi) || 0))
     );
+  }, [topDeviasi]);
 
-    const [filteredProjects, setFilteredProjects] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [filters, setFilters] = useState({
-        status: "ALL",
-        priority: "ALL",
-    });
+  // fungsi warna gradasi berdasarkan nilai deviasi
+  const getDeviasiColor = (value) => {
+    const v = Number(value) || 0;
 
-    const filterProjects = () => {
-        let filtered = projects;
+    // intensity sekarang makin kecil saat deviasi makin besar
+    const intensity = Math.round(
+        255 - (Math.min(Math.abs(v), maxAbsDeviasi) / maxAbsDeviasi) * 155
+    ); // hasil 100..255
 
-        if (searchTerm) {
-            filtered = filtered.filter(
-                (project) =>
-                    project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    project.description?.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-        }
+    if (v < 0) {
+        // merah tua = deviasi besar
+        return `rgb(${intensity}, 60, 60)`;
+    } else {
+        // hijau tua = deviasi besar (negatif)
+        return `rgb(60, ${intensity}, 60)`;
+    }
+  };
 
-        if (filters.status !== "ALL") {
-            filtered = filtered.filter((project) => project.status === filters.status);
-        }
 
-        if (filters.priority !== "ALL") {
-            filtered = filtered.filter(
-                (project) => project.priority === filters.priority
-            );
-        }
+  // Filter trend berdasarkan dropdown (ALL => tampilkan 4 sample)
+  const filteredTrends =
+    selectedProject === "ALL" ? trends.slice(0, 4) : trends.filter((t) => t.monitoring_id === selectedProject);
 
-        setFilteredProjects(filtered);
-    };
+  if (loading) return <div>Loading...</div>;
 
-    useEffect(() => {
-        filterProjects();
-    }, [projects, searchTerm, filters]);
+  return (
+    <div className="space-y-6 max-w-6xl mx-auto">
+      <h1 className="text-2xl font-semibold">Project Analytics</h1>
 
-    return (
-        <div className="space-y-6 max-w-6xl mx-auto">
-            {/* Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-                <div>
-                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-1"> Projects </h1>
-                    <p className="text-gray-500 dark:text-zinc-400 text-sm"> Manage and track your projects </p>
-                </div>
-                <button onClick={() => setIsDialogOpen(true)} className="flex items-center px-5 py-2 text-sm rounded bg-gradient-to-br from-blue-500 to-blue-600 text-white hover:opacity-90 transition" >
-                    <Plus className="size-4 mr-2" /> New Project
-                </button>
-                <CreateProjectDialog isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
-            </div>
-
-            {/* Search and Filters */}
-            <div className="flex flex-col md:flex-row gap-4">
-                <div className="relative w-full max-w-sm">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-zinc-400 w-4 h-4" />
-                    <input onChange={(e) => setSearchTerm(e.target.value)} value={searchTerm} className="w-full pl-10 text-sm pr-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-400 focus:border-blue-500 outline-none" placeholder="Search projects..." />
-                </div>
-                <select value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm" >
-                    <option value="ALL">All Status</option>
-                    <option value="ACTIVE">Active</option>
-                    <option value="PLANNING">Planning</option>
-                    <option value="COMPLETED">Completed</option>
-                    <option value="ON_HOLD">On Hold</option>
-                    <option value="CANCELLED">Cancelled</option>
-                </select>
-                <select value={filters.priority} onChange={(e) => setFilters({ ...filters, priority: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm" >
-                    <option value="ALL">All Priority</option>
-                    <option value="HIGH">High</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="LOW">Low</option>
-                </select>
-            </div>
-
-            {/* Projects Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProjects.length === 0 ? (
-                    <div className="col-span-full text-center py-16">
-                        <div className="w-24 h-24 mx-auto mb-6 bg-gray-200 dark:bg-zinc-800 rounded-full flex items-center justify-center">
-                            <FolderOpen className="w-12 h-12 text-gray-400 dark:text-zinc-500" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                            No projects found
-                        </h3>
-                        <p className="text-gray-500 dark:text-zinc-400 mb-6 text-sm">
-                            Create your first project to get started
-                        </p>
-                        <button onClick={() => setIsDialogOpen(true)} className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mx-auto text-sm" >
-                            <Plus className="size-4" />
-                            Create Project
-                        </button>
-                    </div>
-                ) : (
-                    filteredProjects.map((project) => (
-                        <ProjectCard key={project.id} project={project} />
-                    ))
-                )}
-            </div>
+      {/* Summary */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="max-sm:w-full dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-gray-300 dark:border-zinc-800 rounded-lg p-6">
+          <p className="text-sm text-gray-500">Total Proyek</p>
+          <p className="text-xl font-bold">{summary?.totalProjects ?? 0}</p>
         </div>
-    );
+        <div className="max-sm:w-full dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-gray-300 dark:border-zinc-800 rounded-lg p-6">
+          <p className="text-sm text-gray-500">Proyek Terkendala</p>
+          <p className="text-xl font-bold">{summary?.problematicProjects ?? 0}</p>
+        </div>
+        <div className="max-sm:w-full dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-gray-300 dark:border-zinc-800 rounded-lg p-6">
+          <p className="text-sm text-gray-500">On Track</p>
+          <p className="text-xl font-bold">{summary?.onTrack ?? 0}</p>
+        </div>
+      </div>
+
+      {/* Deviasi Bar Chart */}
+      <div className="max-sm:w-full dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-gray-300 dark:border-zinc-800 rounded-lg p-6">
+        <h2 className="mb-2 font-medium">Grafik Deviasi Pekerjaan (per proyek)</h2>
+        <ResponsiveContainer width="100%" height={340}>
+          <BarChart data={topDeviasi} margin={{ top: 10, right: 20, left: 0, bottom: 60 }}>
+            <XAxis
+              dataKey="nama_proyek"
+              tick={{ fontSize: 12 }}
+              angle={-30}
+              textAnchor="end"
+              interval={0}
+              height={60}
+              tickFormatter={(value) =>
+                    value.length > 25 ? value.substring(0, 25) + "..." : value
+                }
+            />
+            <YAxis />
+            <Tooltip
+              formatter={(value) => {
+                // tampilkan dengan 2 desimal
+                return [Number(value).toLocaleString(undefined, { maximumFractionDigits: 2 }), "Deviasi"];
+              }}
+            />
+            <Bar dataKey="deviasi" radius={[6, 6, 0, 0]}>
+              {topDeviasi.map((item, index) => (
+                <Cell key={`cell-${index}`} fill={getDeviasiColor(item.deviasi)} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+        
+      </div>
+
+      {/* Pie + Trends */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Problem Pie (diperbesar) */}
+        <div className="max-sm:w-full dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-gray-300 dark:border-zinc-800 rounded-lg p-6">
+          <h2 className="mb-2 font-medium">Proyek Bermasalah (Proporsi)</h2>
+          <ResponsiveContainer width="100%" height={350}>
+            <PieChart>
+              <Pie
+                data={pie}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={110} 
+                label
+              >
+                {pie.map((entry, i) => (
+                  <Cell key={`cell-${i}`} fill={COLORS[i % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Trend Deviasi */}
+        <div className="max-sm:w-full dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-gray-300 dark:border-zinc-800 rounded-lg p-6">
+
+          {/* Dropdown filter proyek */}
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="font-medium">Trend Deviasi Per Proyek</h2>
+            
+            <select
+                className="border p-1.5 rounded text-sm w-48"
+                value={selectedProject}
+                onChange={(e) => setSelectedProject(e.target.value)}
+            >
+                <option value="ALL">Semua Proyek</option>
+                {trends.map((proj) => (
+                <option key={proj.monitoring_id} value={proj.monitoring_id}>
+                    {proj.nama_proyek}
+                </option>
+                ))}
+            </select>
+            </div>
+
+          {/* Chart */}
+          <div style={{ width: "100%", height: 300 }}>
+            <ResponsiveContainer>
+              <LineChart margin={{ top: 10, right: 20, left: 0, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={(d) => new Date(d).toLocaleDateString()}
+                />
+                <YAxis />
+                <Tooltip labelFormatter={(l) => new Date(l).toLocaleString()} />
+                <Legend />
+                {filteredTrends.map((proj, idx) => (
+                  <Line
+                    key={proj.monitoring_id}
+                    data={proj.points}
+                    name={proj.nama_proyek}
+                    dataKey="deviasi"
+                    stroke={COLORS[idx % COLORS.length]}
+                    dot={false}
+                    strokeWidth={2}
+                    isAnimationActive={false}
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
