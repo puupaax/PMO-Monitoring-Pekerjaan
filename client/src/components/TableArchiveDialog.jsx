@@ -192,7 +192,7 @@ return (
 
 
                 {/* TABLE */}
-                <div className="overflow-x-auto border rounded dark:border-zinc-800">
+                <div className="overflow-x-auto overflow-y-auto max-h-[50vh] border rounded dark:border-zinc-800">
                     <table className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-800">
                         <thead className="bg-zinc-50 dark:bg-zinc-900">
                             {table.getHeaderGroups().map((headerGroup) => (

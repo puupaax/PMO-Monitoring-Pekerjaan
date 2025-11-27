@@ -10,7 +10,7 @@ import { requireAuth } from "@clerk/express";
 
 const router = Router();
 
-router.get("/summary", requireAuth(), getSummary);
+router.get("/summary", requireAuth(),  getSummary);
 router.get("/deviasi", requireAuth(), getDeviasiPerProject);
 router.get("/problem-pie", requireAuth(), getProblemPie);
 router.get("/trends", requireAuth(), getTrends);

@@ -151,7 +151,7 @@ export const updateProject = async(req, res) => {
                 kendala,
                 keterangan,
                 team_lead: userId,
-                bulan: bulan
+                
             }
         })
 
@@ -171,7 +171,7 @@ export const updateProject = async(req, res) => {
                 kendala,
                 keterangan,
                 team_lead: userId,
-                bulan: bulan
+                    
             }
         })
 
