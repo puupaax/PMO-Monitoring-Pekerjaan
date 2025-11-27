@@ -96,6 +96,7 @@ model Monitoring {
     owner             User      @relation("ProjectOwner", fields: [team_lead], references: [id])
 
     history             MonitoringHistory[] 
+    rencanaKerja        RencanaKerja[]
 }
 
 model MonitoringHistory {
@@ -123,6 +124,16 @@ model MonitoringHistory {
 
     owner             User      @relation("ProjectOwner", fields: [team_lead], references: [id])
 }
+
+model RencanaKerja {
+  id            String   @id @default(uuid())
+  monitoring_id String
+  minggu        Int
+  progress      Decimal @db.Decimal(10,2)
+
+  monitoring Monitoring @relation(fields: [monitoring_id], references: [id], onDelete: Cascade)
+}
+
 
 model Tahun {
     id          String   @id @default(uuid())

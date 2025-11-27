@@ -98,9 +98,9 @@ const Team = () => {
             {/* Header */}
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                 <div>
-                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-1">Team</h1>
+                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-1">Kelola Pengguna</h1>
                     <p className="text-gray-500 dark:text-zinc-400 text-sm">
-                        Manage team members and their contributions
+                        Kelola semua akun pengguna di sini. 
                     </p>
                 </div>
                 {/* <button

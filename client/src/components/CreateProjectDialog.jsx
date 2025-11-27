@@ -6,11 +6,16 @@ import { set } from "date-fns";
 import { useAuth } from "@clerk/clerk-react";
 import api from "../configs/api";
 import { addProject } from "../features/workspaceSlice";    
+import * as XLSX from "xlsx";
+
 
 const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
 
     const{getToken} = useAuth();
     const dispatch = useDispatch();
+    const [previewData, setPreviewData] = useState([]);
+    const [showPreview, setShowPreview] = useState(false);
+
 
     //const { currentWorkspace } = useSelector((state) => state.workspace);
 
@@ -26,6 +31,7 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
         realisasi: "",
         kendala: false,
         keterangan: "",
+        rencana_kerja : null
         
     });
 
@@ -39,37 +45,61 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {   
-            setIsSubmitting(true)
-            const {data} = await api.post("/api/projects", {...formData}, {headers: {Authorization: `Bearer ${await getToken()}`}});
-            
-            dispatch(addProject(data.project));
+        try {
+            setIsSubmitting(true);
 
-            setFormData({
-                nama_proyek: "",
-                no_kontrak: "",
-                pelaksana_pekerjaan: "",
-                jangka_waktu: "",
-                nama_ppp: "",
-                nama_ppk: "",
-                nama_php: "",
-                rencana: "",
-                realisasi: "",
-                kendala: false,
-                keterangan: "",
-            })
-            if (typeof onSuccess === "function") onSuccess();
+            const fd = new FormData();
+
+            Object.entries(formData).forEach(([key, value]) => {
+            if (value !== null) {
+                fd.append(key, value);
+            }
+            });
+
+            const { data } = await api.post("/api/projects", fd, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+                "Content-Type": "multipart/form-data"
+            }
+            });
+
+            dispatch(addProject(data.project));
             toast.success(data.message);
-            
             setIsDialogOpen(false);
+
         } catch (error) {
-            toast.error(error?.response?.data?.message || error.message);         
-        }
-        finally {
+            toast.error(error?.response?.data?.message || error.message);
+        } finally {
             setIsSubmitting(false);
         }
-        
     };
+
+
+    const handleExcelUpload = async (file) => {
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data, { type: "array" });
+
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+
+        // Convert to JSON, PEMBAHASAN: header=1 => array 2D
+        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        // HAPUS ROW PERTAMA (TEMPLATE / HEADER)
+        const dataRows = rows.slice(1);
+
+        // Mapping sesuai template Excel kamu
+        const parsed = dataRows
+            .filter(row => row.length > 0) // buang baris kosong
+            .map((row, index) => ({
+                minggu: row[0] || "",
+                progress: row[1] || "",
+            }));
+
+        setPreviewData(parsed);
+        setShowPreview(true);
+    };
+
 
     if (!isDialogOpen) return null;
 
@@ -248,6 +278,50 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                             className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700    "
                         />
                     </div>
+                    {/* RENCANA KERJA (UPLOAD EXCEL) */}
+                    <div>
+                        <label className="block text-sm mb-1">Rencana Kerja (Excel)</label>
+                        <input
+                            type="file"
+                            accept=".xls,.xlsx"
+                            onChange={(e) => {
+                                const file = e.target.files[0];
+                                setFormData({ ...formData, rencana_kerja: file });
+                                handleExcelUpload(file);
+                            }}
+                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border 
+                                    border-zinc-300 dark:border-zinc-700"
+                        />
+
+                        {formData.rencana_kerja && (
+                            <p className="text-xs mt-1 text-green-600">
+                                File: {formData.rencana_kerja.name}
+                            </p>
+                        )}
+                    </div>
+                    <label className="block text-sm mb-1">Preview</label>
+                    {showPreview && (
+                        <div className="mt-3 border rounded-lg overflow-auto max-h-52">
+                            
+                            <table className="w-full text-sm border-collapse">
+                                <thead className="bg-zinc-100 dark:bg-zinc-800 sticky top-0">
+                                    <tr>
+                                        <th className="border px-2 py-1">Minggu ke-</th>
+                                        <th className="border px-2 py-1">Progress (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {previewData.map((row, i) => (
+                                        <tr key={i} className="odd:bg-white even:bg-zinc-50 dark:odd:bg-zinc-900 dark:even:bg-zinc-800">
+                                            
+                                            <td className="border px-2 py-1">{row.minggu}</td>
+                                            <td className="border px-2 py-1">{row.progress}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
 
                     {/* FOOTER */}
                     <div className="flex justify-end gap-3 pt-2 text-sm">
