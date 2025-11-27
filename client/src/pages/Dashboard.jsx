@@ -1,9 +1,12 @@
 import { Plus } from 'lucide-react'
 import { use, useState } from 'react'
 
+import api from "../configs/api";
+
 import CreateProjectDialog from '../components/CreateProjectDialog'
 import { useAuth, useUser } from '@clerk/clerk-react'
 import TableOverview from '../components/TableOverview'
+import { useEffect } from 'react'
 
 
 const Dashboard = () => {
@@ -25,6 +28,10 @@ const Dashboard = () => {
             }
     };
 
+    useEffect(() => {
+        reloadData();
+    }, []);
+
     return (
         <div className='w-full max-w-4xl mx-auto px-6'>
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 ">
@@ -43,7 +50,7 @@ const Dashboard = () => {
             {/* <StatsGrid /> */}
 
             <div className="mt-8">
-                <TableOverview />
+                <TableOverview data={data} reloadData={reloadData} />
             </div>
         </div>
     )

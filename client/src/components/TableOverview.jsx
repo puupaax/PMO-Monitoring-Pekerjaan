@@ -13,7 +13,7 @@ import DeleteMonitor from "./DeleteMonitor";
 
 const columnHelper = createColumnHelper();
 
-const TableOverview = () => {
+const TableOverview = ({ data: externalData, reloadData }) => {
     const [selectedMonth, setSelectedMonth] = useState(false);
     const [showArchive, setShowArchive] = useState(false);
     const [showRencanaKerja, setShowRencanaKerja] = useState(false);
@@ -27,21 +27,27 @@ const TableOverview = () => {
     const [monitoringId, setMonitoringId] = useState(null);
     const [selectedProject, setSelectedProject] = useState(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const token = await getToken();
-                const res = await api.get("/api/monitor/", {
-                    headers: {Authorization: `Bearer ${token}`}
-                }); 
-                setData(res.data); 
-            } catch (error) {
-                console.log("Error fetching monitoring:", error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const token = await getToken();
+    //             const res = await api.get("/api/monitor/", {
+    //                 headers: {Authorization: `Bearer ${token}`}
+    //             }); 
+    //             setData(res.data); 
+    //         } catch (error) {
+    //             console.log("Error fetching monitoring:", error);
+    //         }
+    //     };
 
-        fetchData();
-    }, []);
+    //     fetchData();
+    // }, []);
+
+    useEffect(() => {
+        if (externalData) {
+            setData(externalData);
+        }
+    }, [externalData]);
 
     const columns = [
         columnHelper.accessor("nama_proyek", {
@@ -187,18 +193,18 @@ const TableOverview = () => {
             cell: ({ row }) => {
                 return (
                     <div className="flex items-center gap-2">
-                        <TableOfContents size={18} className="text-gray-600"
+                        <TableOfContents size={18} className="text-gray-600 cursor-pointer"
                             onClick={() => {
                                 setMonitoringId(row.original.id)
                                 setShowArchive(true)
                             }}
                         />
-                        <SquarePen size={18} className="text-green-600" 
+                        <SquarePen size={18} className="text-green-600 cursor-pointer" 
                         onClick={() => {
                             setSelectedProject(row.original)
                             setUpdMonitor(true)
                         }}/>
-                        <Trash2 size={18} className="text-red-600" 
+                        <Trash2 size={18} className="text-red-600 cursor-pointer" 
                         onClick={() => {
                             setMonitoringId(row.original.id)
                             setDelMonitor(true)
@@ -240,17 +246,17 @@ const TableOverview = () => {
         getFilteredRowModel: getFilteredRowModel(),
     });
 
-    const reloadData = async () => {
-        try {
-            const token = await getToken();
-            const res = await api.get("/api/monitor/", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setData(res.data);
-        } catch (error) {
-            console.log("Error fetching monitoring:", error);
-        }
-    };
+    // const reloadData = async () => {
+    //     try {
+    //         const token = await getToken();
+    //         const res = await api.get("/api/monitor/", {
+    //             headers: { Authorization: `Bearer ${token}` },
+    //         });
+    //         setData(res.data);
+    //     } catch (error) {
+    //         console.log("Error fetching monitoring:", error);
+    //     }
+    // };
 
 
     return (
@@ -348,11 +354,17 @@ const TableOverview = () => {
 
                     <tbody className="bg-white divide-y divide-gray-200">
                         {table.getRowModel().rows.map((row) => (
-                            <tr key={row.id} className="hover:bg-gray-50">
+                            <tr key={row.id} className="hover:bg-gray-50 cursor-pointer"
+                            onClick={() => {
+                                if (cell.column.id !== "actions") {
+                                    setMonitoringId(row.original.id);
+                                    setShowArchive(true);
+                                }
+                            }}>
                                 {row.getVisibleCells().map((cell) => (
                                     <td
                                         key={cell.id}
-                                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                                        className="px-6 py-4 whitespace-normal align-top text-sm text-gray-500"
                                     >
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </td>
