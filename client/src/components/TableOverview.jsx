@@ -7,6 +7,7 @@ import api from "../configs/api";
 import { useSelector } from "react-redux";
 import { useAuth } from "@clerk/clerk-react";
 import TableArchiveDialog from "./TableArchiveDialog";
+import TableRencanaKerja from "./TableRencanaKerja"; 
 import UpdMonitorDialog from "./UpdMonitorDialog";
 import DeleteMonitor from "./DeleteMonitor";
 
@@ -15,6 +16,7 @@ const columnHelper = createColumnHelper();
 const TableOverview = () => {
     const [selectedMonth, setSelectedMonth] = useState(false);
     const [showArchive, setShowArchive] = useState(false);
+    const [showRencanaKerja, setShowRencanaKerja] = useState(false);
     const [updMonitor, setUpdMonitor] = useState(false);
     const [delMonitor, setDelMonitor] = useState(false);
 
@@ -101,6 +103,27 @@ const TableOverview = () => {
             ),
             cell: (info) => info.getValue(),
         }),
+            columnHelper.display({
+            id: "actions_rencana",
+            header: () => (
+                <span className="flex items-center cursor-default select-none">
+                    Rencana Kerja
+                </span>
+            ),
+            enableSorting: false,
+            cell: ({ row }) => {
+                return (
+                    <div className="flex items-center gap-2">
+                        <TableOfContents size={18} className="text-green-600" 
+                            onClick={() => {
+                                setMonitoringId(row.original.id)
+                                setShowRencanaKerja(true)
+                            }}
+                        />
+                    </div>
+                );
+            }
+        }),
             columnHelper.accessor("rencana", {
             header: () => (
             <span className="flex items-center">
@@ -183,7 +206,8 @@ const TableOverview = () => {
                     </div>
                 );
             }
-    }),
+        }),
+        
     ];
 
     const filteredData = React.useMemo(() => {
@@ -234,6 +258,11 @@ const TableOverview = () => {
         <TableArchiveDialog
             show={showArchive}
             onClose={() => setShowArchive(false)}
+            monitorId={monitoringId}
+        />
+        <TableRencanaKerja
+            show={showRencanaKerja}
+            onClose={() => setShowRencanaKerja(false)}
             monitorId={monitoringId}
         />
         <UpdMonitorDialog 

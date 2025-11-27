@@ -110,3 +110,27 @@ export const getDataMonitorHistory = async (req, res) => {
     }
 };
 
+
+export const getDataRencanaKerja = async (req, res) => {
+    try {
+        
+        const { userId } = await req.auth();
+        const { monitorId } = req.params;
+
+        const rencanakerja = await prisma.rencanaKerja.findMany({
+            where: {
+                monitoring_id: monitorId
+            }, orderBy: 
+            {
+                minggu: "asc"
+            }
+        });
+        
+        return res.json(rencanakerja);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: error.code || error.message });
+    }
+};
+
