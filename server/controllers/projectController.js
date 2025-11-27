@@ -131,7 +131,7 @@ export const updateProject = async(req, res) => {
             keterangan,
             team_lead,
         } = req.body;
-        
+
         const deviasi = Number(realisasi) - Number(rencana);
         const kendala = deviasi < 0;
 
@@ -150,8 +150,7 @@ export const updateProject = async(req, res) => {
                 deviasi,
                 kendala,
                 keterangan,
-                team_lead: userId,
-                bulan: bulan
+                team_lead: userId
             }
         })
 
@@ -171,7 +170,6 @@ export const updateProject = async(req, res) => {
                 kendala,
                 keterangan,
                 team_lead: userId,
-                bulan: bulan
             }
         })
 

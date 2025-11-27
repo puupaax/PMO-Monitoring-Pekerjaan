@@ -95,21 +95,30 @@ const columns = [
         ),
         cell: (info) => info.getValue(),
     }),
-        columnHelper.accessor("kendala", {
-        header: () => (
-        <span className="flex items-center">
-            <TriangleAlert className="mr-2" size={16} /> Kendala
-        </span>
-        ),
-        cell: (info) => info.getValue(),
-    }),
+    //     columnHelper.accessor("kendala", {
+    //     header: () => (
+    //     <span className="flex items-center">
+    //         <TriangleAlert className="mr-2" size={16} /> Kendala
+    //     </span>
+    //     ),
+    //     cell: (info) => info.getValue(),
+    // }),
         columnHelper.accessor("keterangan", {
         header: () => (
         <span className="flex items-center">
             <NotebookPen className="mr-2" size={16} /> Keterangan
         </span>
         ),
-        cell: (info) => info.getValue(),
+        cell: (info) => {
+                const text = info.getValue() || "";
+
+                const isLong = text.length > 40; 
+                return (
+                    <div className={isLong ? "min-w-[300px]" : "min-w-[auto] whitespace-normal"}>
+                        {text}
+                    </div>
+                );
+            }
     }),
 ];
 
@@ -193,14 +202,16 @@ return (
 
                 {/* TABLE */}
                 <div className="overflow-x-auto border rounded dark:border-zinc-800">
-                    <table className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-800">
+                    <div className="overflow-y-auto max-h-96 ">
+                    <table className="divide-y divide-zinc-200 dark:divide-zinc-800">
                         <thead className="bg-zinc-50 dark:bg-zinc-900">
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <tr key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => (
                                         <th
                                             key={header.id}
-                                            className="px-4 py-3 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider"
+                                            className={`px-4 py-3 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider
+                                            ${header.column.columnDef.meta?.className || ""}`}
                                         >
                                             {flexRender(header.column.columnDef.header, header.getContext())}
                                         </th>
@@ -219,7 +230,8 @@ return (
                                 table.getRowModel().rows.map(row => (
                                     <tr key={row.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900">
                                         {row.getVisibleCells().map(cell => (
-                                            <td key={cell.id} className="px-4 py-3 text-sm">
+                                            <td key={cell.id} className={`whitespace-normal align-top px-4 py-3 text-sm
+                                            ${cell.column.columnDef.meta?.className || ""}`}>
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                             </td>
                                         ))}
@@ -228,6 +240,7 @@ return (
                             )}
                         </tbody>
                     </table>
+                    </div>
                 </div>
 
                 {/* PAGINATION */}
