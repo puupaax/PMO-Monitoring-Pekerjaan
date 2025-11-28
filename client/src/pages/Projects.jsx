@@ -30,6 +30,31 @@ export default function Projects() {
   const [selectedProject, setSelectedProject] = useState("ALL");
   const [loading, setLoading] = useState(true);
 
+  const ScrollableLegend = ({ payload }) => {
+    return (
+      <div
+        className="overflow-y-auto pr-2"
+        style={{ maxHeight: "75px" }}
+      >
+        {payload.map((entry, index) => (
+          <div
+            key={`item-${index}`}
+            className="flex items-center gap-2 mb-1 text-sm leading-5"
+            style={{ height: "24px" }} // tinggi per item
+          >
+            <span
+              className="w-3 h-3 rounded-full inline-block"
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="truncate">{entry.value}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+
+
   const fetchAll = async () => {
     try {
       setLoading(true);
@@ -101,15 +126,30 @@ export default function Projects() {
   };
 
 
-  // Filter trend berdasarkan dropdown (ALL => tampilkan 4 sample)
   const filteredTrends =
-    selectedProject === "ALL" ? trends.slice(0, 4) : trends.filter((t) => t.monitoring_id === selectedProject);
+    selectedProject === "ALL"
+      ? trends.slice(0, 50)
+      : trends.filter((t) => t.monitoring_id === selectedProject);
+
+
+  const selectedTrend = useMemo(() => {
+    if (selectedProject === "ALL") return null;
+    return trends.find((t) => t.monitoring_id === selectedProject);
+  }, [selectedProject, trends]);
+
+  useEffect(() => {
+    // console.log("Selected project:", selectedProject);
+    // console.log("Selected trend:", selectedTrend);
+  }, [selectedProject, selectedTrend]);
+
+
 
   if (loading) return <div>Loading...</div>;
 
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-semibold">Project Analytics</h1>
+      <h1 className="text-2xl font-semibold">Analisis Proyek</h1>
 
       {/* Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -186,55 +226,97 @@ export default function Projects() {
           </ResponsiveContainer>
         </div>
 
-        {/* Trend Deviasi */}
-        <div className="max-sm:w-full dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-gray-300 dark:border-zinc-800 rounded-lg p-6">
+          {/* Trend Deviasi */}
+          <div className="max-sm:w-full dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-gray-300 dark:border-zinc-800 rounded-lg p-6">
 
-          {/* Dropdown filter proyek */}
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="font-medium">Trend Deviasi Per Proyek</h2>
-            
-            <select
-                className="border p-1.5 rounded text-sm w-48"
-                value={selectedProject}
-                onChange={(e) => setSelectedProject(e.target.value)}
-            >
-                <option value="ALL">Semua Proyek</option>
-                {trends.map((proj) => (
-                <option key={proj.monitoring_id} value={proj.monitoring_id}>
-                    {proj.nama_proyek}
-                </option>
-                ))}
-            </select>
-            </div>
+            {/* Dropdown filter proyek */}
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="font-medium">
+                {selectedProject === "ALL"
+                  ? "Trend Deviasi Semua Proyek" 
+                  : `Trend Proyek:  ${selectedTrend?.nama_proyek}`}
+              </h2>
+              <select
+                  className="border p-1.5 rounded text-sm w-48"
+                  value={selectedProject}
+                  onChange={(e) => setSelectedProject(e.target.value)}
+              >
+                  <option value="ALL">Semua Proyek</option>
+                  {trends.map((proj) => (
+                  <option key={proj.monitoring_id} value={proj.monitoring_id}>
+                      {proj.nama_proyek}
+                  </option>
+                  ))}
+              </select>
+              </div>
 
-          {/* Chart */}
-          <div style={{ width: "100%", height: 300 }}>
-            <ResponsiveContainer>
-              <LineChart margin={{ top: 10, right: 20, left: 0, bottom: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="date"
-                  tickFormatter={(d) => new Date(d).toLocaleDateString()}
-                />
-                <YAxis />
-                <Tooltip labelFormatter={(l) => new Date(l).toLocaleString()} />
-                <Legend />
-                {filteredTrends.map((proj, idx) => (
-                  <Line
-                    key={proj.monitoring_id}
-                    data={proj.points}
-                    name={proj.nama_proyek}
-                    dataKey="deviasi"
-                    stroke={COLORS[idx % COLORS.length]}
-                    dot={false}
-                    strokeWidth={2}
-                    isAnimationActive={false}
+            {/* Chart */}
+            <div style={{ width: "100%", height: 300 }}>
+              <ResponsiveContainer>
+                <LineChart
+                  data={selectedProject === "ALL" ? undefined : selectedTrend?.points}
+                  margin={{ top: 10, right: 20, left: 0, bottom: 20 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="date"
+                    tickFormatter={(d) => new Date(d).toLocaleDateString()}
                   />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
+                  <YAxis />
+                  <Tooltip labelFormatter={(l) => new Date(l).toLocaleString()} />
+                  <Legend
+                    content={<ScrollableLegend />}
+                    wrapperStyle={{
+                      paddingTop: 15,
+                      paddingLeft: 30,  
+                    }}
+                  />
+
+                  {selectedProject === "ALL" ? (
+                    // MODE SEMUA PROYEK (deviasi saja)
+                    filteredTrends.map((proj, idx) => (
+                      <Line
+                        key={proj.monitoring_id}
+                        data={proj.points}
+                        name={proj.nama_proyek}
+                        dataKey="deviasi"
+                        stroke={COLORS[idx % COLORS.length]}
+                        dot={false}
+                        strokeWidth={2}
+                        isAnimationActive={false}
+                      />
+                    ))
+                  ) : (
+                    // MODE 1 PROYEK (rencana, realisasi, deviasi)
+                    <>
+                      <Line
+                        dataKey="rencana"
+                        name="Rencana"
+                        stroke="#3b82f6"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                      <Line
+                        dataKey="realisasi"
+                        name="Realisasi"
+                        stroke="#10b981"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                      <Line
+                        dataKey="deviasi"
+                        name="Deviasi"
+                        stroke="#ef4444"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                    </>
+                  )}
+
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-        </div>
       </div>
     </div>
   );

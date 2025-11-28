@@ -122,6 +122,8 @@ export const getTrends = async (req, res) => {
       select: {
         monitoring_id: true,
         nama_proyek: true,
+        rencana: true,
+        realisasi: true,
         deviasi: true,
         createdAt: true,
       },
@@ -139,6 +141,8 @@ export const getTrends = async (req, res) => {
       }
       groups.get(key).points.push({
         date: row.createdAt,
+        rencana: Number(row.rencana),
+        realisasi : Number(row.realisasi),
         deviasi: Number(row.deviasi),
       });
     }
