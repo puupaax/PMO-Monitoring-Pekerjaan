@@ -1,7 +1,7 @@
 {
   "engines": {
     "node": "20.x"
-  }
+  },
 
   "name": "project-management",
   "private": true,
