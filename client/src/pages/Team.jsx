@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { UsersIcon, Search, UserPlus, Shield, Activity } from "lucide-react";
-import InviteMemberDialog from "../components/InviteMemberDialog";
 import { useSelector } from "react-redux";
 import { useAuth } from "@clerk/clerk-react";
 import api from "../configs/api";
@@ -110,10 +109,6 @@ const Team = () => {
                 >
                     <UserPlus className="w-4 h-4 mr-2" /> Invite Member
                 </button> */}
-                <InviteMemberDialog
-                    isDialogOpen={isDialogOpen}
-                    setIsDialogOpen={setIsDialogOpen}
-                />
             </div>
 
             {/* Stats Cards */}

@@ -13,6 +13,7 @@ import DeleteMonitor from "./DeleteMonitor";
 const columnHelper = createColumnHelper();
 
 const TableOverview = () => {
+    const [selectedMonth, setSelectedMonth] = useState(false);
     const [showArchive, setShowArchive] = useState(false);
     const [updMonitor, setUpdMonitor] = useState(false);
     const [delMonitor, setDelMonitor] = useState(false);
@@ -185,8 +186,18 @@ const TableOverview = () => {
     }),
     ];
 
+    const filteredData = React.useMemo(() => {
+        if (!selectedMonth) return data;
+
+        return data.filter((item) => {
+            if (!item.createdAt) return false;
+            const monthNumber = new Date(item.createdAt).getMonth() + 1; 
+            return monthNumber === Number(selectedMonth);
+        });
+    }, [data, selectedMonth]);
+
     const table = useReactTable({
-        data,
+        data: filteredData,
         columns,
         state: {
             sorting,
@@ -239,14 +250,36 @@ const TableOverview = () => {
         />
 
         <div className="flex flex-col w-full mt-6">
-            <div className="mb-4 relative">
-                <input
-                    value={globalFilter ?? ""}
-                    onChange={(e) => setGlobalFilter(e.target.value)}
-                    placeholder="Cari Nama Proyek"
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <div className="mb-4 flex gap-4">
+                <select
+                    className="pl-2 pr-2 py-2 text-gray-400 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                >
+                    <option value="">Semua Bulan</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+
+                <div className="relative flex-1">
+                    <input
+                        value={globalFilter ?? ""}
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        placeholder="Cari Nama Proyek"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                </div>
             </div>
 
             <div className="overflow-x-auto bg-white shadow-md rounded-lg">

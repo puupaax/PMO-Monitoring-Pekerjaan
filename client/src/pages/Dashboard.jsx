@@ -1,18 +1,17 @@
 import { Plus } from 'lucide-react'
 import { use, useState } from 'react'
-import StatsGrid from '../components/StatsGrid'
-import ProjectOverview from '../components/ProjectOverview'
-import RecentActivity from '../components/RecentActivity'
-import TasksSummary from '../components/TasksSummary'
+
 import CreateProjectDialog from '../components/CreateProjectDialog'
-import { useUser } from '@clerk/clerk-react'
+import { useAuth, useUser } from '@clerk/clerk-react'
 import TableOverview from '../components/TableOverview'
-import TableOverviewd from '../components/TableOverviewd'
+
 
 const Dashboard = () => {
 
+    const { getToken } = useAuth();
     const {user} = useUser()
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [data, setData] = useState([])
 
     const reloadData = async () => {
             try {
@@ -41,7 +40,7 @@ const Dashboard = () => {
                 <CreateProjectDialog isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} onSuccess={reloadData}/>
             </div>
 
-            <StatsGrid />
+            {/* <StatsGrid /> */}
 
             <div className="mt-8">
                 <TableOverview />
