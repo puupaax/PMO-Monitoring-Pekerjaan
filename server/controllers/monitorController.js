@@ -51,40 +51,21 @@ export const getDataMonitor = async (req, res) => {
 
 export const getDataMonitorHistory = async (req, res) => {
     try {
-        const { userId } = await req.auth();
         
-        const user = await prisma.user.findUnique({
-            where: { id: userId }
-        });
-
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        let filter = {};
-
-        if (user.role !== "ADMIN") {
-            const historyMonitor = await prisma.monitoringHistory.findMany({
-                where: { team_lead: userId },
-                select: { monitoring_id: true }
-            });
-
-            const monitorId = historyMonitor.map(h => h.monitoring_id);
-
-            filter = {
-                OR: [
-                    { team_lead: userId }, 
-                    { monitoring_id: { in: monitorId } } // ✔️ perbaikan
-                ]
-            };
-        }
+        const { userId } = await req.auth();
+        const { monitorId } = req.params;
 
         const monitors = await prisma.monitoringHistory.findMany({
-            where: filter,
-            include: { owner: { select: { id: true } } },
-            orderBy: { createdAt: "desc" }
+            where: {
+                monitoring_id: monitorId
+            }, include: {
+                owner: { select: { id: true } }
+            }
+            , orderBy: {
+                createdAt: "desc"
+            }
         });
-
+        // console.log("data: ", monitors);
         return res.json(monitors);
 
     } catch (error) {
@@ -107,7 +88,7 @@ export const getDataRencanaKerja = async (req, res) => {
             {
                 minggu: "asc"
             }
-        });
+        });     
         
         return res.json(rencanakerja);
 

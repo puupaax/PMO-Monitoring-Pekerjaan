@@ -64,7 +64,7 @@ model User {
     image     String   @default("")
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    role     String  @default("USER")
+    role     String  @default("ADMIN")
 
 
     Monitoring          Monitoring[]          @relation("ProjectOwner")
@@ -75,8 +75,15 @@ model Monitoring {
     id              String   @id @default(uuid())
     nama_proyek     String
     no_kontrak      String
+    tgl_kontrak     DateTime?
+    nilai_proyek    Int?
     pelaksana_pekerjaan   String
     jangka_waktu    Int
+    start_proyek    DateTime?
+    end_proyek      DateTime?
+    start_pemeliharaan  DateTime?
+    masa_pemeliharaan   Int?
+    end_pemeliharaan    DateTime?     
     nama_ppp        String
     nama_ppk        String
     nama_php        String
@@ -96,7 +103,7 @@ model Monitoring {
     owner             User      @relation("ProjectOwner", fields: [team_lead], references: [id])
 
     history             MonitoringHistory[] 
-    rencanaKerja        RencanaKerja[]
+    RencanaKerja        RencanaKerja[]
 }
 
 model MonitoringHistory {
@@ -107,8 +114,16 @@ model MonitoringHistory {
     
     nama_proyek     String
     no_kontrak      String
+    tgl_kontrak     DateTime?
+    nilai_proyek    Int?
     pelaksana_pekerjaan   String
     jangka_waktu    Int
+    start_proyek    DateTime?
+    masa_pelaksana  Int?
+    end_proyek      DateTime?
+    start_pemeliharaan  DateTime?
+    masa_pemeliharaan   Int?
+    end_pemeliharaan    DateTime?    
     nama_ppp        String
     nama_ppk        String
     nama_php        String
@@ -125,6 +140,12 @@ model MonitoringHistory {
     owner             User      @relation("ProjectOwner", fields: [team_lead], references: [id])
 }
 
+model Tahun {
+    id          String   @id @default(uuid())
+    tahun       Int
+    createdAt       DateTime @default(now())
+}
+
 model RencanaKerja {
   id            String   @id @default(uuid())
   monitoring_id String
@@ -133,11 +154,3 @@ model RencanaKerja {
 
   monitoring Monitoring @relation(fields: [monitoring_id], references: [id], onDelete: Cascade)
 }
-
-
-model Tahun {
-    id          String   @id @default(uuid())
-    tahun       Int
-    createdAt       DateTime @default(now())
-}
-
