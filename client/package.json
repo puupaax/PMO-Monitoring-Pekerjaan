@@ -8,7 +8,7 @@
   "version": "0.0.0",
   "type": "module",
   "overrides": {
-    "@rollup/rollup-linux-x64-gnu": "0.0.0"
+    "@rollup@3"
   },
   "scripts": {
     "dev": "vite",
