@@ -190,7 +190,7 @@
                         team_lead: userId,
 
                 nilai_proyek,
-                masa_pemeliharaan,,
+                masa_pemeliharaan,
                             
                     }
                 })
@@ -201,7 +201,7 @@
                 //console.log(error);
                 res.status(500).json({ message: error.code || error.message })
             }
-        })
+        }
 
         
 
@@ -231,71 +231,65 @@
         //     }
         // })
 
-        res.json({ message: "Project created successfully"})
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: error.code || error.message })
-    }
-}
 
 // Update project
-export const updateProject = async(req, res) => {
-    try {
-        const {userId} = await req.auth();
-        const {
-            id,
-            nama_proyek,
-            no_kontrak,
-            pelaksana_pekerjaan,
-            jangka_waktu,
-            nama_ppp,
-            nama_ppk,
-            nama_php,
-            rencana,
-            realisasi,
-            keterangan,
-            team_lead,
-        } = req.body;
+// export const updateProject = async(req, res) => {
+//     try {
+//         const {userId} = await req.auth();
+//         const {
+//             id,
+//             nama_proyek,
+//             no_kontrak,
+//             pelaksana_pekerjaan,
+//             jangka_waktu,
+//             nama_ppp,
+//             nama_ppk,
+//             nama_php,
+//             rencana,
+//             realisasi,
+//             keterangan,
+//             team_lead,
+//         } = req.body;
 
-        const deviasi = Number(realisasi) - Number(rencana);
-        const kendala = deviasi < 0;
+//         const deviasi = Number(realisasi) - Number(rencana);
+//         const kendala = deviasi < 0;
 
-        const monitoring = await prisma.monitoring.update({
-            where: { id },
-            data: {
-                nama_proyek,
-                no_kontrak,
-                pelaksana_pekerjaan,
-                jangka_waktu,
-                nama_ppp,
-                nama_ppk,
-                nama_php,
-                rencana,
-                realisasi,
-                deviasi,
-                kendala,
-                keterangan,
-                team_lead: userId
-            }
-        })
+//         const monitoring = await prisma.monitoring.update({
+//             where: { id },
+//             data: {
+//                 nama_proyek,
+//                 no_kontrak,
+//                 pelaksana_pekerjaan,
+//                 jangka_waktu,
+//                 nama_ppp,
+//                 nama_ppk,
+//                 nama_php,
+//                 rencana,
+//                 realisasi,
+//                 deviasi,
+//                 kendala,
+//                 keterangan,
+//                 team_lead: userId
+//             }
+//         })
 
-        const monitoringhistory = await prisma.monitoringHistory.create({
-            data: {
-                monitoring_id: monitoring.id,
-                nama_proyek,
-                no_kontrak,
-                pelaksana_pekerjaan,
-                jangka_waktu,
-                nama_ppp,
-                nama_ppk,
-                nama_php,
-                rencana,
-                realisasi,
-                deviasi,
-                kendala,
-                keterangan,
-                team_lead: userId,
-        }
+//         const monitoringhistory = await prisma.monitoringHistory.create({
+//             data: {
+//                 monitoring_id: monitoring.id,
+//                 nama_proyek,
+//                 no_kontrak,
+//                 pelaksana_pekerjaan,
+//                 jangka_waktu,
+//                 nama_ppp,
+//                 nama_ppk,
+//                 nama_php,
+//                 rencana,
+//                 realisasi,
+//                 deviasi,
+//                 kendala,
+//                 keterangan,
+//                 team_lead: userId,
+//         }
 
         export const deleteMonitor = async(req, res) => {
             try {

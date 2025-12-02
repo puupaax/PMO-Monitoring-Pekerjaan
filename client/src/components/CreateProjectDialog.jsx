@@ -31,7 +31,7 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
         realisasi: "",
         kendala: false,
         keterangan: "",
-        rencana_kerja : null
+        rencana_kerja : null,
 
         // tgl_kontrak: "",
         nilai_proyek: "",
