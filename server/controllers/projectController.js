@@ -10,6 +10,8 @@ export const createProject = async(req, res) => {
             no_kontrak,
             pelaksana_pekerjaan,
             jangka_waktu,
+            start_proyek,
+            end_proyek,
             nama_ppp,
             nama_ppk,
             nama_php,
@@ -17,6 +19,9 @@ export const createProject = async(req, res) => {
             realisasi,
             keterangan,
             team_lead,
+
+            nilai_proyek,
+            masa_pemeliharaan,
         } = req.body;
 
         // // check if user has admin role for workspace
@@ -47,6 +52,10 @@ export const createProject = async(req, res) => {
                 no_kontrak,
                 pelaksana_pekerjaan,
                 jangka_waktu,
+                start_proyek: new Date(req.body.start_proyek),
+                end_proyek: new Date(req.body.end_proyek),
+                start_pemeliharaan: new Date(req.body.start_pemeliharaan),
+                end_pemeliharaan: new Date(req.body.end_pemeliharaan),
                 nama_ppp,
                 nama_ppk,
                 nama_php,
@@ -55,7 +64,10 @@ export const createProject = async(req, res) => {
                 deviasi,
                 kendala,
                 keterangan,
-                team_lead: userId
+                team_lead: userId,
+
+                nilai_proyek,
+                masa_pemeliharaan,
             }
         })
 
@@ -66,6 +78,10 @@ export const createProject = async(req, res) => {
                 no_kontrak,
                 pelaksana_pekerjaan,
                 jangka_waktu,
+                start_proyek: new Date(req.body.start_proyek),
+                end_proyek: new Date(req.body.end_proyek),
+                start_pemeliharaan: new Date(req.body.start_pemeliharaan),
+                end_pemeliharaan: new Date(req.body.end_pemeliharaan),
                 nama_ppp,
                 nama_ppk,
                 nama_php,
@@ -74,7 +90,10 @@ export const createProject = async(req, res) => {
                 deviasi,
                 kendala,
                 keterangan,
-                team_lead: userId
+                team_lead: userId,
+
+                nilai_proyek,
+                masa_pemeliharaan,
             }
         })
 

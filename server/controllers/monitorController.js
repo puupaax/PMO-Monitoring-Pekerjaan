@@ -12,27 +12,29 @@ export const getDataMonitor = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        let filter = {};
+        // admin user role
+        // let filter = {};
 
-        if (user.role !== "ADMIN") {
+        // if (user.role !== "ADMIN") {
 
-            const historyMonitor = await prisma.monitoringHistory.findMany({
-                where: { team_lead: userId },
-                select: { monitoring_id: true }
-            });
+        //     const historyMonitor = await prisma.monitoringHistory.findMany({
+        //         where: { team_lead: userId },
+        //         select: { monitoring_id: true }
+        //     });
 
-            const monitorId = historyMonitor.map(h => h.monitoring_id);
+        //     const monitorId = historyMonitor.map(h => h.monitoring_id);
 
-            filter = {
-                OR: [
-                    { team_lead: userId },
-                    { id: { in: monitorId } }
-                ]
-            };
-        }
+        //     filter = {
+        //         OR: [
+        //             { team_lead: userId },
+        //             { id: { in: monitorId } }
+        //         ]
+        //     };
+        // }
 
         const monitors = await prisma.monitoring.findMany({
-            where: filter,
+            // where: filter,
+            where: {},
             include: {
                 owner: { select: { id: true } }
             },
@@ -40,6 +42,8 @@ export const getDataMonitor = async (req, res) => {
                 createdAt: "desc"
             }
         });
+        
+        // console.log("Monitoring IDs:", monitors);
 
         return res.json(monitors);
         
@@ -51,40 +55,21 @@ export const getDataMonitor = async (req, res) => {
 
 export const getDataMonitorHistory = async (req, res) => {
     try {
-        const { userId } = await req.auth();
         
-        const user = await prisma.user.findUnique({
-            where: { id: userId }
-        });
-
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        let filter = {};
-
-        if (user.role !== "ADMIN") {
-            const historyMonitor = await prisma.monitoringHistory.findMany({
-                where: { team_lead: userId },
-                select: { monitoring_id: true }
-            });
-
-            const monitorId = historyMonitor.map(h => h.monitoring_id);
-
-            filter = {
-                OR: [
-                    { team_lead: userId }, 
-                    { monitoring_id: { in: monitorId } } // ✔️ perbaikan
-                ]
-            };
-        }
+        const { userId } = await req.auth();
+        const { monitorId } = req.params;
 
         const monitors = await prisma.monitoringHistory.findMany({
-            where: filter,
-            include: { owner: { select: { id: true } } },
-            orderBy: { createdAt: "desc" }
+            where: {
+                monitoring_id: monitorId
+            }, include: {
+                owner: { select: { id: true } }
+            }
+            , orderBy: {
+                createdAt: "desc"
+            }
         });
-
+        // console.log("data: ", monitors);
         return res.json(monitors);
 
     } catch (error) {
@@ -92,4 +77,49 @@ export const getDataMonitorHistory = async (req, res) => {
         res.status(500).json({ message: error.code || error.message });
     }
 };
+
+// export const getDataMonitorHistory = async (req, res) => {
+//     try {
+//         const { userId } = await req.auth();
+        
+//         const user = await prisma.user.findUnique({
+//             where: { id: userId }
+//         });
+
+//         if (!user) {
+//             return res.status(404).json({ message: "User not found" });
+//         }
+
+//         // admin user role
+//         // let filter = {};
+
+//         // if (user.role !== "ADMIN") {
+//         //     const historyMonitor = await prisma.monitoringHistory.findMany({
+//         //         where: { team_lead: userId },
+//         //         select: { monitoring_id: true }
+//         //     });
+
+//         //     const monitorId = historyMonitor.map(h => h.monitoring_id);
+
+//         //     filter = {
+//         //         OR: [
+//         //             { team_lead: userId }, 
+//         //             { monitoring_id: { in: monitorId } } // ✔️ perbaikan
+//         //         ]
+//         //     };
+//         // }
+
+//         const monitors = await prisma.monitoringHistory.findMany({
+//             where: {},
+//             include: { owner: { select: { id: true } } },
+//             orderBy: { createdAt: "desc" }
+//         });
+
+//         return res.json(monitors);
+
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({ message: error.code || error.message });
+//     }
+// };
 

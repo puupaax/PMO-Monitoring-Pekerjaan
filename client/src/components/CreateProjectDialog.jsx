@@ -26,7 +26,14 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
         realisasi: "",
         kendala: false,
         keterangan: "",
-        
+
+        // tgl_kontrak: "",
+        nilai_proyek: "",
+        start_proyek: "",
+        end_proyek: "",
+        start_pemeliharaan: "",
+        masa_pemeliharaan: "",
+        end_pemeliharaan: ""
     });
 
     const [errors, setErrors] = useState({
@@ -57,6 +64,14 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                 realisasi: "",
                 kendala: false,
                 keterangan: "",
+
+                // tgl_kontrak: "",
+                nilai_proyek: "",
+                start_proyek: "",
+                end_proyek: "",
+                start_pemeliharaan: "",
+                masa_pemeliharaan: "",
+                end_pemeliharaan: ""
             })
             if (typeof onSuccess === "function") onSuccess();
             toast.success(data.message);
@@ -121,6 +136,18 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                         />
                     </div>
 
+                    {/* NILAI PROYEK */}
+                    <div>
+                        <label className="block text-sm mb-1">Nilai Proyek</label>
+                        <input
+                            type="number"
+                            value={formData.nilai_proyek}
+                            onChange={(e) => setFormData({ ...formData, nilai_proyek: Number(e.target.value) })}
+                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
+                            required
+                        />
+                    </div>
+
                     {/* PELAKSANA */}
                     <div>
                         <label className="block text-sm mb-1">Pelaksana Pekerjaan</label>
@@ -139,11 +166,95 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                         <input
                             type="number"
                             value={formData.jangka_waktu}
-                            onChange={(e) => setFormData({ ...formData, jangka_waktu: Number(e.target.value) })}
+                            onChange={(e) => {
+                                const duration = Number(e.target.value);
+                                const start = formData.start_proyek;
+
+                                let endProject = "";
+                                if (start && duration) {
+                                    const d = new Date(start);
+                                    d.setDate(d.getDate() + duration);
+                                    endProject = d.toISOString().split("T")[0];
+                                }
+
+                                setFormData({
+                                    ...formData,
+                                    jangka_waktu: duration,
+                                    end_proyek: endProject,
+                                });
+                            }}
                             className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
                             required
                         />
                     </div>
+
+                    <div>
+                            <label className="block text-sm mb-1">Start Date</label>
+                            <input type="date" value={formData.start_proyek} 
+                            onChange={(e) => {
+                                const start = e.target.value;
+                                const duration = formData.jangka_waktu;
+
+                                let endProject = "";
+                                if (start && duration) {
+                                    const d = new Date(start);
+                                    d.setDate(d.getDate() + Number(duration));
+                                    endProject = d.toISOString().split("T")[0];
+                                }
+
+                                setFormData({
+                                    ...formData,
+                                    start_proyek: start,
+                                    end_proyek: endProject,
+                                });
+                            }}  
+                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mt-1 text-zinc-900 dark:text-zinc-200 text-sm" />
+                    </div>
+                    <div>
+                            <label className="block text-sm mb-1">End Date</label>
+                            <input type="date" disabled value={formData.end_proyek} onChange={(e) => setFormData({ ...formData, end_proyek: e.target.value })} className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mt-1 text-zinc-900 dark:text-zinc-200 text-sm" />
+                    </div>
+
+
+                    {/* MASA PEMELIHARAAN */}
+                    <div>
+                        <label className="block text-sm mb-1">Masa Pemeliharaan (hari)</label>
+                        <input
+                            type="number"
+                            value={formData.masa_pemeliharaan}
+                            onChange={(e) => setFormData({ ...formData, masa_pemeliharaan: Number(e.target.value) })}
+                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm mb-1">Start Pemeliharaan</label>
+                            <input type="date" value={formData.start_pemeliharaan} 
+                                onChange={(e) => {
+                                    const start = e.target.value;
+                                    const duration = formData.masa_pemeliharaan;
+
+                                    let endProject = "";
+                                    if (start && duration) {
+                                        const d = new Date(start);
+                                        d.setDate(d.getDate() + Number(duration));
+                                        endProject = d.toISOString().split("T")[0];
+                                    }
+
+                                    setFormData({
+                                        ...formData,
+                                        start_pemeliharaan: start,
+                                        end_pemeliharaan: endProject,
+                                    });
+                                }}
+                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mt-1 text-zinc-900 dark:text-zinc-200 text-sm" />
+                    </div>
+                    <div>
+                            <label className="block text-sm mb-1">End Pemeliharaan</label>
+                            <input type="date" disabled value={formData.end_pemeliharaan} onChange={(e) => setFormData({ ...formData, end_pemeliharaan: e.target.value })} className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mt-1 text-zinc-900 dark:text-zinc-200 text-sm" />
+                    </div>
+
 
                     {/* PJ PPP, PPK, PHP */}
                     <div>
