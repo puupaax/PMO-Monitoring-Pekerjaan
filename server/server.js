@@ -6,12 +6,13 @@
     import { serve } from "inngest/express";
     import { inngest, functions } from "./inngest/index.js"
     import { protect } from './middlewares/authMiddleware.js';
+    import { requireRole } from "./middlewares/requireRole.js";
     import projectRouter from './routes/projectRoutes.js';
 
     import userRoutes from './routes/userRoutes.js';
     import monitoringgraphRoutes from "./routes/monitoringgraphRoutes.js";
 
-import monitorRoutes from './routes/monitorRoutes.js';
+    import monitorRoutes from './routes/monitorRoutes.js';
 
     if (!process.env.CLERK_PUBLISHABLE_KEY) {
         throw new Error('Missing Clerk Publishable Key');
@@ -36,20 +37,15 @@ import monitorRoutes from './routes/monitorRoutes.js';
     // app.use(clerkMiddleware({
     //     publishableKey: process.env.CLERK_PUBLISHABLE_KEY
     // }));
-    app.use("/uploads", express.static("uploads"));
+    // app.use("/uploads", express.static("uploads"));
 
 
     app.get('/', (req, res)=> res.send('Server is live'));
     app.use("/api/inngest", serve({ client: inngest, functions }));
 
     //routes
-    //app.use('/api/workspaces', protect, workspaceRouter)
-    app.use("/api/projects", protect, projectRouter)
-    //app.use("/api/tasks", protect, taskRouter)
-    //app.use("/api/comments", protect, commentRouter)
-    //app.use("/api/evidences", protect, evidenceRouter)
-    //app.use("/api/weekly-progress", protect, weeklyRouter)
-    app.use("/api/users", userRoutes);
+    app.use("/api/projects", protect, requireRole("ADMIN"),  projectRouter) //GRAFIK
+    app.use("/api/users", protect, requireRole("ADMIN"), userRoutes);
     app.use("/api/monitoring-history", monitoringgraphRoutes);
     app.use("/api/monitor", protect, monitorRoutes)
 
