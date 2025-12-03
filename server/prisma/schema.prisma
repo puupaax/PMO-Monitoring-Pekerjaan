@@ -94,9 +94,6 @@ model Monitoring {
     start_pemeliharaan  DateTime?
     masa_pemeliharaan   Int?
     end_pemeliharaan    DateTime?     
-    nama_ppp        String
-    nama_ppk        String
-    nama_php        String
     rencana         Decimal @db.Decimal(10, 2)
     realisasi       Decimal @db.Decimal(10, 2)
     deviasi         Decimal @db.Decimal(10, 2)
@@ -135,9 +132,6 @@ model MonitoringHistory {
     start_pemeliharaan  DateTime?
     masa_pemeliharaan   Int?
     end_pemeliharaan    DateTime?    
-    nama_ppp        String
-    nama_ppk        String
-    nama_php        String
     rencana         Decimal @db.Decimal(10, 2)
     realisasi       Decimal @db.Decimal(10, 2)
     deviasi         Decimal @db.Decimal(10, 2)

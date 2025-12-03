@@ -21,9 +21,9 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
         pelaksana_pekerjaan: "",
         jangka_waktu: "",
         masa_pemeliharaan: "",
-        nama_ppp: "",
-        nama_ppk: "",
-        nama_php: "",
+        // nama_ppp: "",
+        // nama_ppk: "",
+        // nama_php: "",
         rencana: "",
         realisasi: "",
         kendala: false,
@@ -50,9 +50,9 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
                 pelaksana_pekerjaan: projectData.pelaksana_pekerjaan || "",
                 jangka_waktu: projectData.jangka_waktu || "",
                 masa_pemeliharaan: projectData.masa_pemeliharaan || "",
-                nama_ppp: projectData.nama_ppp || "",
-                nama_ppk: projectData.nama_ppk || "",
-                nama_php: projectData.nama_php || "",
+                // nama_ppp: projectData.nama_ppp || "",
+                // nama_ppk: projectData.nama_ppk || "",
+                // nama_php: projectData.nama_php || "",
                 rencana: projectData.rencana || "",
                 realisasi: projectData.realisasi || "",
                 kendala: projectData.kendala || false,
@@ -80,9 +80,9 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
                 pelaksana_pekerjaan: "",
                 jangka_waktu: "",
                 masa_pemeliharaan: "",
-                nama_ppp: "",
-                nama_ppk: "",
-                nama_php: "",
+                // nama_ppp: "",
+                // nama_ppk: "",
+                // nama_php: "",
                 rencana: "",
                 realisasi: "",
                 kendala: false,
@@ -262,7 +262,7 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
                             <input type="date" value={formData.end_pemeliharaan} onChange={(e) => setFormData({ ...formData, end_pemeliharaan: e.target.value })} className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mt-1 text-zinc-900 dark:text-zinc-200 text-sm" />
                     </div>
 
-                    {/* PJ PPP, PPK, PHP */}
+                    {/* PJ PPP, PPK, PHP
                     <div>
                         <label className="block text-sm mb-1">Nama PPP</label>
                         <input
@@ -291,7 +291,7 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
                             onChange={(e) => setFormData({ ...formData, nama_php: e.target.value })}
                             className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
                         />
-                    </div>
+                    </div> */}
 
                     {/* RENCANA / REALISASI / DEVIASI */}
                     <div className="grid grid-cols-2 gap-4">

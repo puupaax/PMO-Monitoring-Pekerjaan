@@ -25,9 +25,9 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
         no_kontrak: "",
         pelaksana_pekerjaan: "",
         jangka_waktu: "",
-        nama_ppp: "",
-        nama_ppk: "",
-        nama_php: "",
+        // nama_ppp: "",
+        // nama_ppk: "",
+        // nama_php: "",
         rencana: "",
         realisasi: "",
         kendala: false,
@@ -91,9 +91,9 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                 no_kontrak: formData.no_kontrak,
                 pelaksana_pekerjaan: formData.pelaksana_pekerjaan,
                 jangka_waktu: formData.jangka_waktu,
-                nama_ppp: formData.nama_ppp,
-                nama_ppk: formData.nama_ppk,
-                nama_php: formData.nama_php,
+                // nama_ppp: formData.nama_ppp,
+                // nama_ppk: formData.nama_ppk,
+                // nama_php: formData.nama_php,
                 rencana: formData.rencana,
                 nilai_proyek: formData.nilai_proyek,
                 start_proyek: formData.start_proyek,
@@ -138,9 +138,9 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                 no_kontrak: "",
                 pelaksana_pekerjaan: "",
                 jangka_waktu: "",
-                nama_ppp: "",
-                nama_ppk: "",
-                nama_php: "",
+                // nama_ppp: "",
+                // nama_ppk: "",
+                // nama_php: "",
                 rencana: "",
                 realisasi: "",
                 kendala: false,
@@ -446,7 +446,7 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                     </div>
 
 
-                    {/* PJ PPP, PPK, PHP */}
+                    {/* PJ PPP, PPK, PHP
                     <div>
                         <label className="block text-sm mb-1">Nama PPP</label>
                         <input
@@ -475,7 +475,7 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                             onChange={(e) => setFormData({ ...formData, nama_php: e.target.value })}
                             className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
                         />
-                    </div>
+                    </div> */}
 
                     {/* RENCANA / REALISASI / DEVIASI */}
                     <div className="grid grid-cols-2 gap-4">
