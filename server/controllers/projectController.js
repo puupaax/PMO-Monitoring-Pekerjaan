@@ -13,6 +13,8 @@
                     no_kontrak,
                     pelaksana_pekerjaan,
                     jangka_waktu,
+                    start_proyek,
+                    end_proyek,
                     nama_ppp,
                     nama_ppk,
                     nama_php,
@@ -20,6 +22,9 @@
                     realisasi,
                     keterangan,
                     team_lead,
+        
+                    nilai_proyek,
+                    masa_pemeliharaan,
                     personil: personilStr
                 } = req.body;
 
@@ -44,12 +49,26 @@
                 const deviasi = Number(realisasi) - Number(rencana);
                 const kendala = deviasi < 0;
 
+        // if(!workspace.members.some((member)=> member.userId === userId && member.role === "ADMIN")){
+        //     return res.status(403).json({ message: "You don't have permission to create projects in this workspace" });
+        // }
+
+        // Get Team Lead using email
+        // const teamLead = await prisma.user.findUnique({
+        //     where: {email: team_lead},
+        //     select: {id: true}
+        // })
+
                 const monitoring = await prisma.monitoring.create({
                     data: {
                         nama_proyek,
                         no_kontrak,
                         pelaksana_pekerjaan,
                         jangka_waktu: Number(jangka_waktu),
+                        start_proyek: new Date(req.body.start_proyek),
+                        end_proyek: new Date(req.body.end_proyek),
+                        start_pemeliharaan: new Date(req.body.start_pemeliharaan),
+                        end_pemeliharaan: new Date(req.body.end_pemeliharaan),
                         nama_ppp,
                         nama_ppk,
                         nama_php,
@@ -58,7 +77,10 @@
                         deviasi,
                         kendala,
                         keterangan,
-                        team_lead: userId
+                        team_lead: userId,
+
+                        nilai_proyek,
+                        masa_pemeliharaan: Number(masa_pemeliharaan),
                     }
                 })
 
@@ -77,7 +99,10 @@
                         deviasi,
                         kendala,
                         keterangan,
-                        team_lead: userId
+                        team_lead: userId,
+
+                        nilai_proyek,
+                        masa_pemeliharaan: Number(masa_pemeliharaan),
                     }
                 })
 
@@ -337,7 +362,11 @@
                         no_kontrak,
                         pelaksana_pekerjaan,
                         jangka_waktu,
-                        nama_ppp,
+                        start_proyek: new Date(req.body.start_proyek),
+                end_proyek: new Date(req.body.end_proyek),
+                start_pemeliharaan: new Date(req.body.start_pemeliharaan),
+                end_pemeliharaan: new Date(req.body.end_pemeliharaan),
+                nama_ppp,
                         nama_ppk,
                         nama_php,
                         rencana,
@@ -346,6 +375,9 @@
                         kendala,
                         keterangan,
                         team_lead: userId,
+
+                nilai_proyek,
+                masa_pemeliharaan,
                             
                     }
                 })

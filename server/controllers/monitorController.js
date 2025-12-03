@@ -12,27 +12,29 @@ export const getDataMonitor = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        let filter = {};
+        // admin user role
+        // let filter = {};
 
-        if (user.role !== "ADMIN") {
+        // if (user.role !== "ADMIN") {
 
-            const historyMonitor = await prisma.monitoringHistory.findMany({
-                where: { team_lead: userId },
-                select: { monitoring_id: true }
-            });
+        //     const historyMonitor = await prisma.monitoringHistory.findMany({
+        //         where: { team_lead: userId },
+        //         select: { monitoring_id: true }
+        //     });
 
-            const monitorId = historyMonitor.map(h => h.monitoring_id);
+        //     const monitorId = historyMonitor.map(h => h.monitoring_id);
 
-            filter = {
-                OR: [
-                    { team_lead: userId },
-                    { id: { in: monitorId } }
-                ]
-            };
-        }
+        //     filter = {
+        //         OR: [
+        //             { team_lead: userId },
+        //             { id: { in: monitorId } }
+        //         ]
+        //     };
+        // }
 
         const monitors = await prisma.monitoring.findMany({
-            where: filter,
+            // where: filter,
+            where: {},
             include: {
                 owner: { select: { id: true } },
                 personil: {
@@ -50,6 +52,8 @@ export const getDataMonitor = async (req, res) => {
                 createdAt: "desc"
             }
         });
+        
+        // console.log("Monitoring IDs:", monitors);
 
         return res.json(monitors);
         

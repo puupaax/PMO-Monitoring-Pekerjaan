@@ -86,7 +86,7 @@ model Monitoring {
     nama_proyek     String
     no_kontrak      String
     tgl_kontrak     DateTime?
-    nilai_proyek    Int?
+    nilai_proyek    Decimal? @db.Decimal(15, 2)
     pelaksana_pekerjaan   String
     jangka_waktu    Int
     start_proyek    DateTime?
@@ -126,7 +126,7 @@ model MonitoringHistory {
     nama_proyek     String
     no_kontrak      String
     tgl_kontrak     DateTime?
-    nilai_proyek    Int?
+    nilai_proyek    Decimal? @db.Decimal(15, 2)
     pelaksana_pekerjaan   String
     jangka_waktu    Int
     start_proyek    DateTime?

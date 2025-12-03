@@ -20,6 +20,7 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
         no_kontrak: "",
         pelaksana_pekerjaan: "",
         jangka_waktu: "",
+        masa_pemeliharaan: "",
         nama_ppp: "",
         nama_ppk: "",
         nama_php: "",
@@ -48,6 +49,7 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
                 no_kontrak: projectData.no_kontrak || "",
                 pelaksana_pekerjaan: projectData.pelaksana_pekerjaan || "",
                 jangka_waktu: projectData.jangka_waktu || "",
+                masa_pemeliharaan: projectData.masa_pemeliharaan || "",
                 nama_ppp: projectData.nama_ppp || "",
                 nama_ppk: projectData.nama_ppk || "",
                 nama_php: projectData.nama_php || "",
@@ -55,6 +57,11 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
                 realisasi: projectData.realisasi || "",
                 kendala: projectData.kendala || false,
                 keterangan: projectData.keterangan || "",
+
+                start_proyek: projectData.start_proyek || "",
+                end_proyek: projectData.end_proyek || "",
+                start_pemeliharaan: projectData.start_pemeliharaan || "",
+                end_pemeliharaan: projectData.end_pemeliharaan || "",
             });
         }
     }, [isDialogOpen, projectData]);
@@ -72,6 +79,7 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
                 no_kontrak: "",
                 pelaksana_pekerjaan: "",
                 jangka_waktu: "",
+                masa_pemeliharaan: "",
                 nama_ppp: "",
                 nama_ppk: "",
                 nama_php: "",
@@ -79,6 +87,11 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
                 realisasi: "",
                 kendala: false,
                 keterangan: "",
+
+                start_proyek: "",
+                start_pemeliharaan: "",
+                end_proyek: "",
+                end_pemeliharaan: "",
             })
             if (typeof onSuccess === "function") onSuccess();
             toast.success(data.message);
@@ -160,10 +173,93 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
                         <input
                             type="number"
                             value={formData.jangka_waktu}
-                            onChange={(e) => setFormData({ ...formData, jangka_waktu: Number(e.target.value) })}
+                            onChange={(e) => {
+                                const duration = Number(e.target.value);
+                                const start = formData.start_proyek;
+
+                                let endProject = "";
+                                if (start && duration) {
+                                    const d = new Date(start);
+                                    d.setDate(d.getDate() + duration);
+                                    endProject = d.toISOString().split("T")[0];
+                                }
+
+                                setFormData({
+                                    ...formData,
+                                    jangka_waktu: duration,
+                                    end_proyek: endProject,
+                                });
+                            }}
                             className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
                             required
                         />
+                    </div>
+
+                    <div>
+                            <label className="block text-sm mb-1">Start Date</label>
+                            <input type="date" value={formData.start_proyek} 
+                            onChange={(e) => {
+                                const start = e.target.value;
+                                const duration = formData.jangka_waktu;
+
+                                let endProject = "";
+                                if (start && duration) {
+                                    const d = new Date(start);
+                                    d.setDate(d.getDate() + Number(duration));
+                                    endProject = d.toISOString().split("T")[0];
+                                }
+
+                                setFormData({
+                                    ...formData,
+                                    start_proyek: start,
+                                    end_proyek: endProject,
+                                });
+                            }}  
+                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mt-1 text-zinc-900 dark:text-zinc-200 text-sm" />
+                    </div>
+                    <div>
+                            <label className="block text-sm mb-1">End Date</label>
+                            <input type="date" value={formData.end_proyek} onChange={(e) => setFormData({ ...formData, end_proyek: e.target.value })} className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mt-1 text-zinc-900 dark:text-zinc-200 text-sm" />
+                    </div>
+
+
+                    {/* MASA PEMELIHARAAN */}
+                    <div>
+                        <label className="block text-sm mb-1">Masa Pemeliharaan (hari)</label>
+                        <input
+                            type="number"
+                            value={formData.masa_pemeliharaan}
+                            onChange={(e) => setFormData({ ...formData, masa_pemeliharaan: Number(e.target.value) })}
+                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm mb-1">Start Pemeliharaan</label>
+                            <input type="date" value={formData.start_pemeliharaan} 
+                                onChange={(e) => {
+                                    const start = e.target.value;
+                                    const duration = formData.masa_pemeliharaan;
+
+                                    let endProject = "";
+                                    if (start && duration) {
+                                        const d = new Date(start);
+                                        d.setDate(d.getDate() + Number(duration));
+                                        endProject = d.toISOString().split("T")[0];
+                                    }
+
+                                    setFormData({
+                                        ...formData,
+                                        start_pemeliharaan: start,
+                                        end_pemeliharaan: endProject,
+                                    });
+                                }}
+                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mt-1 text-zinc-900 dark:text-zinc-200 text-sm" />
+                    </div>
+                    <div>
+                            <label className="block text-sm mb-1">End Pemeliharaan</label>
+                            <input type="date" value={formData.end_pemeliharaan} onChange={(e) => setFormData({ ...formData, end_pemeliharaan: e.target.value })} className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mt-1 text-zinc-900 dark:text-zinc-200 text-sm" />
                     </div>
 
                     {/* PJ PPP, PPK, PHP */}
