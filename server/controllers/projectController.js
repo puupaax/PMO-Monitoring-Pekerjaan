@@ -15,6 +15,8 @@
                     jangka_waktu,
                     start_proyek,
                     end_proyek,
+                    start_pemeliharaan,
+                    end_pemeliharaan,
                     nama_ppp,
                     nama_ppk,
                     nama_php,
@@ -84,6 +86,10 @@
 
                         nilai_proyek,
                         masa_pemeliharaan: Number(masa_pemeliharaan),
+                        start_proyek: new Date(req.body.start_proyek),
+                        end_proyek: new Date(req.body.end_proyek),
+                        start_pemeliharaan: new Date(req.body.start_pemeliharaan),
+                        end_pemeliharaan: new Date(req.body.end_pemeliharaan),
                     }
                 })
 
