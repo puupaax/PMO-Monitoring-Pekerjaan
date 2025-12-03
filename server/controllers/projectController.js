@@ -79,7 +79,7 @@
                         keterangan,
                         team_lead: userId,
 
-                        nilai_proyek,
+                        nilai_proyek: Number(nilai_proyek),
                         masa_pemeliharaan: Number(masa_pemeliharaan),
                     }
                 })
@@ -101,7 +101,7 @@
                         keterangan,
                         team_lead: userId,
 
-                        nilai_proyek,
+                        nilai_proyek: Number(nilai_proyek),
                         masa_pemeliharaan: Number(masa_pemeliharaan),
                     }
                 })
