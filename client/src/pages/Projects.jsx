@@ -138,8 +138,8 @@ export default function Projects() {
   }, [selectedProject, trends]);
 
   useEffect(() => {
-    console.log("Selected project:", selectedProject);
-    console.log("Selected trend:", selectedTrend);
+    // console.log("Selected project:", selectedProject);
+    // console.log("Selected trend:", selectedTrend);
   }, [selectedProject, selectedTrend]);
 
 

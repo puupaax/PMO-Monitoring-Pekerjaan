@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { XIcon } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -15,6 +15,7 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
     const dispatch = useDispatch();
     const [previewData, setPreviewData] = useState([]);
     const [showPreview, setShowPreview] = useState(false);
+    const [users, setUsers] = useState([]);
 
 
     //const { currentWorkspace } = useSelector((state) => state.workspace);
@@ -40,12 +41,42 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
         start_pemeliharaan: "",
         masa_pemeliharaan: "",
         end_pemeliharaan: ""
+        personil: {
+            pyb: [],
+            koordinator_ppik: "",
+            anggota_ppik: [],
+            anggota_ppp: [],
+            ketua_php: "",
+            anggota_php: []
+        }
+        
     });
 
     const [errors, setErrors] = useState({
         rencana: "",
         realisasi: ""
     });
+
+    useEffect(() => {
+        // Fetch users ketika dialog dibuka
+        if (isDialogOpen) {
+            fetchUsers();
+        }
+    }, [isDialogOpen]);
+
+    const fetchUsers = async () => {
+        try {
+            const { data } = await api.get("/api/users", {
+                headers: {
+                    Authorization: `Bearer ${await getToken()}`
+                }
+            });
+            setUsers(data);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            toast.error("Gagal memuat daftar user");
+        }
+    };
 
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,13 +86,37 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
         try {
             setIsSubmitting(true);
 
+            const submitData = {
+                nama_proyek: formData.nama_proyek,
+                no_kontrak: formData.no_kontrak,
+                pelaksana_pekerjaan: formData.pelaksana_pekerjaan,
+                jangka_waktu: formData.jangka_waktu,
+                nama_ppp: formData.nama_ppp,
+                nama_ppk: formData.nama_ppk,
+                nama_php: formData.nama_php,
+                rencana: formData.rencana,
+                realisasi: formData.realisasi,
+                kendala: formData.kendala,
+                keterangan: formData.keterangan,
+                personil: formData.personil
+            };
+
             const fd = new FormData();
 
-            Object.entries(formData).forEach(([key, value]) => {
-            if (value !== null) {
-                fd.append(key, value);
-            }
+            // Add regular fields
+            Object.entries(submitData).forEach(([key, value]) => {
+                if (value !== null && key !== 'personil') {
+                    fd.append(key, value);
+                }
             });
+
+            // Add personil as JSON string
+            fd.append('personil', JSON.stringify(submitData.personil));
+
+            // Add file jika ada
+            if (formData.rencana_kerja) {
+                fd.append('rencana_kerja', formData.rencana_kerja);
+            }
 
             const { data } = await api.post("/api/projects", fd, {
             headers: {
@@ -128,6 +183,90 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
 
         setPreviewData(parsed);
         setShowPreview(true);
+    };
+
+    const addPersonilPYB = (userId) => {
+        if (!userId || formData.personil.pyb.includes(userId)) return;
+        setFormData(prev => ({
+            ...prev,
+            personil: {
+                ...prev.personil,
+                pyb: [...prev.personil.pyb, userId]
+            }
+        }));
+    };
+
+    const removePersonilPYB = (userId) => {
+        setFormData(prev => ({
+            ...prev,
+            personil: {
+                ...prev.personil,
+                pyb: prev.personil.pyb.filter(id => id !== userId)
+            }
+        }));
+    };
+
+    const addPersonilAnggotaPPIK = (userId) => {
+        if (!userId || formData.personil.anggota_ppik.includes(userId)) return;
+        setFormData(prev => ({
+            ...prev,
+            personil: {
+                ...prev.personil,
+                anggota_ppik: [...prev.personil.anggota_ppik, userId]
+            }
+        }));
+    };
+
+    const removePersonilAnggotaPPIK = (userId) => {
+        setFormData(prev => ({
+            ...prev,
+            personil: {
+                ...prev.personil,
+                anggota_ppik: prev.personil.anggota_ppik.filter(id => id !== userId)
+            }
+        }));
+    };
+
+    const addPersonilAnggotaPHP = (userId) => {
+        if (!userId || formData.personil.anggota_php.includes(userId)) return;
+        setFormData(prev => ({
+            ...prev,
+            personil: {
+                ...prev.personil,
+                anggota_php: [...prev.personil.anggota_php, userId]
+            }
+        }));
+    };
+
+    const removePersonilAnggotaPHP = (userId) => {
+        setFormData(prev => ({
+            ...prev,
+            personil: {
+                ...prev.personil,
+                anggota_php: prev.personil.anggota_php.filter(id => id !== userId)
+            }
+        }));
+    };
+
+    const addPersonilAnggotaPPP = (userId) => {
+        if (!userId || formData.personil.anggota_ppp.includes(userId)) return;
+        setFormData(prev => ({
+            ...prev,
+            personil: {
+                ...prev.personil,
+                anggota_ppp: [...prev.personil.anggota_ppp, userId]
+            }
+        }));
+    };
+
+    const removePersonilAnggotaPPP = (userId) => {
+        setFormData(prev => ({
+            ...prev,
+            personil: {
+                ...prev.personil,
+                anggota_ppp: prev.personil.anggota_ppp.filter(id => id !== userId)
+            }
+        }));
     };
 
 
@@ -404,6 +543,210 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                             className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700    "
                         />
                     </div>
+
+                    {/* PERSONIL SECTION */}
+                    <div className="border-t border-zinc-300 dark:border-zinc-700 pt-4 mt-4">
+                        <h3 className="text-base font-medium mb-4">Data Personil</h3>
+
+                        {/* PYB */}
+                        <div className="mb-4">
+                            <label className="block text-sm mb-2">Nama PYB</label>
+                            <select
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        addPersonilPYB(e.target.value);
+                                        e.target.value = "";
+                                    }
+                                }}
+                                className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mb-2"
+                            >
+                                <option value="">-- Pilih User --</option>
+                                {users.map(user => (
+                                    <option key={user.id} value={user.id}>
+                                        {user.name} ({user.email})
+                                    </option>
+                                ))}
+                            </select>
+                            <div className="flex flex-wrap gap-2">
+                                {formData.personil.pyb.map(userId => {
+                                    const user = users.find(u => u.id === userId);
+                                    return (
+                                        <div key={userId} className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                                            {user?.name}
+                                            <button
+                                                type="button"
+                                                onClick={() => removePersonilPYB(userId)}
+                                                className="hover:text-blue-600 dark:hover:text-blue-400"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* KOORDINATOR PPIK */}
+                        <div className="mb-4">
+                            <label className="block text-sm mb-2">Koordinator PPIK</label>
+                            <select
+                                value={formData.personil.koordinator_ppik}
+                                onChange={(e) => setFormData(prev => ({
+                                    ...prev,
+                                    personil: {
+                                        ...prev.personil,
+                                        koordinator_ppik: e.target.value
+                                    }
+                                }))}
+                                className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
+                            >
+                                <option value="">-- Pilih User --</option>
+                                {users.map(user => (
+                                    <option key={user.id} value={user.id}>
+                                        {user.name} ({user.email})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* ANGGOTA PPIK */}
+                        <div className="mb-4">
+                            <label className="block text-sm mb-2">Anggota PPIK</label>
+                            <select
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        addPersonilAnggotaPPIK(e.target.value);
+                                        e.target.value = "";
+                                    }
+                                }}
+                                className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mb-2"
+                            >
+                                <option value="">-- Pilih User --</option>
+                                {users.map(user => (
+                                    <option key={user.id} value={user.id}>
+                                        {user.name} ({user.email})
+                                    </option>
+                                ))}
+                            </select>
+                            <div className="flex flex-wrap gap-2">
+                                {formData.personil.anggota_ppik.map(userId => {
+                                    const user = users.find(u => u.id === userId);
+                                    return (
+                                        <div key={userId} className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                                            {user?.name}
+                                            <button
+                                                type="button"
+                                                onClick={() => removePersonilAnggotaPPIK(userId)}
+                                                className="hover:text-green-600 dark:hover:text-green-400"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* KETUA PHP */}
+                        <div className="mb-4">
+                            <label className="block text-sm mb-2">Ketua PHP</label>
+                            <select
+                                value={formData.personil.ketua_php}
+                                onChange={(e) => setFormData(prev => ({
+                                    ...prev,
+                                    personil: {
+                                        ...prev.personil,
+                                        ketua_php: e.target.value
+                                    }
+                                }))}
+                                className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
+                            >
+                                <option value="">-- Pilih User --</option>
+                                {users.map(user => (
+                                    <option key={user.id} value={user.id}>
+                                        {user.name} ({user.email})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* ANGGOTA PHP */}
+                        <div className="mb-4">
+                            <label className="block text-sm mb-2">Anggota PHP</label>
+                            <select
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        addPersonilAnggotaPHP(e.target.value);
+                                        e.target.value = "";
+                                    }
+                                }}
+                                className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mb-2"
+                            >
+                                <option value="">-- Pilih User --</option>
+                                {users.map(user => (
+                                    <option key={user.id} value={user.id}>
+                                        {user.name} ({user.email})
+                                    </option>
+                                ))}
+                            </select>
+                            <div className="flex flex-wrap gap-2">
+                                {formData.personil.anggota_php.map(userId => {
+                                    const user = users.find(u => u.id === userId);
+                                    return (
+                                        <div key={userId} className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                                            {user?.name}
+                                            <button
+                                                type="button"
+                                                onClick={() => removePersonilAnggotaPHP(userId)}
+                                                className="hover:text-purple-600 dark:hover:text-purple-400"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* ANGGOTA PPP */}
+                        <div className="mb-4">
+                            <label className="block text-sm mb-2">Anggota PPP </label>
+                            <select
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        addPersonilAnggotaPPP(e.target.value);
+                                        e.target.value = "";
+                                    }
+                                }}
+                                className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mb-2"
+                            >
+                                <option value="">-- Pilih User --</option>
+                                {users.map(user => (
+                                    <option key={user.id} value={user.id}>
+                                        {user.name} ({user.email})
+                                    </option>
+                                ))}
+                            </select>
+                            <div className="flex flex-wrap gap-2">
+                                {formData.personil.anggota_ppp.map(userId => {
+                                    const user = users.find(u => u.id === userId);
+                                    return (
+                                        <div key={userId} className="bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                                            {user?.name}
+                                            <button
+                                                type="button"
+                                                onClick={() => removePersonilAnggotaPPP(userId)}
+                                                className="hover:text-amber-600 dark:hover:text-amber-400"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+
                     {/* RENCANA KERJA (UPLOAD EXCEL) */}
                     <div>
                         <label className="block text-sm mb-1">Rencana Kerja (Excel)</label>

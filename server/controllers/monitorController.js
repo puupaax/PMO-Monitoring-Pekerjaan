@@ -36,7 +36,17 @@ export const getDataMonitor = async (req, res) => {
             // where: filter,
             where: {},
             include: {
-                owner: { select: { id: true } }
+                owner: { select: { id: true } },
+                personil: {
+                    select: {
+                        id: true,
+                        nama: true,
+                        role: true
+                    },
+                    orderBy: {
+                        role: "asc"
+                    }
+                }
             },
             orderBy: {
                 createdAt: "desc"
@@ -92,7 +102,7 @@ export const getDataRencanaKerja = async (req, res) => {
             {
                 minggu: "asc"
             }
-        });
+        });     
         
         return res.json(rencanakerja);
 

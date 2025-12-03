@@ -18,9 +18,11 @@ enum PersonilRole {
   PYB
   KOORDINATOR_PPIK
   ANGGOTA_PPIK
+  ANGGOTA_PPP
   KETUA_PHP
   ANGGOTA_PHP
 }
+
 
 enum Bulan{
     Januari
@@ -72,7 +74,7 @@ model User {
     image     String   @default("")
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    role     String  @default("USER")
+    role     String  @default("ADMIN")
 
 
     Monitoring          Monitoring[]          @relation("ProjectOwner")
@@ -111,7 +113,7 @@ model Monitoring {
     owner             User      @relation("ProjectOwner", fields: [team_lead], references: [id])
 
     history             MonitoringHistory[] 
-    rencanaKerja        RencanaKerja[]
+    RencanaKerja        RencanaKerja[]
     personil PersonilMonitoring[]
 }
 
@@ -149,6 +151,12 @@ model MonitoringHistory {
     owner             User      @relation("ProjectOwner", fields: [team_lead], references: [id])
 }
 
+model Tahun {
+    id          String   @id @default(uuid())
+    tahun       Int
+    createdAt       DateTime @default(now())
+}
+
 model RencanaKerja {
   id            String   @id @default(uuid())
   monitoring_id String
@@ -156,13 +164,6 @@ model RencanaKerja {
   progress      Decimal @db.Decimal(10,2)
 
   monitoring Monitoring @relation(fields: [monitoring_id], references: [id], onDelete: Cascade)
-}
-
-
-model Tahun {
-    id          String   @id @default(uuid())
-    tahun       Int
-    createdAt       DateTime @default(now())
 }
 
 model PersonilMonitoring {
@@ -175,8 +176,8 @@ model PersonilMonitoring {
 
   // Relasi atasan-bawahan (self-relation)
   atasan_id       String?
-  atasan          PersonilMonitoring? @relation("Hierarchy", fields: [atasan_id], references: [id])
-  bawahan         PersonilMonitoring[] @relation("Hierarchy")
+  atasan          PersonilMonitoring? @relation("HierarchyUp", fields: [atasan_id], references: [id], onDelete: Cascade)
+  bawahan         PersonilMonitoring[] @relation("HierarchyUp")
 
   createdAt       DateTime @default(now())
 }
