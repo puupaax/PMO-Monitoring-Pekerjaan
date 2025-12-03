@@ -34,7 +34,17 @@ export const getDataMonitor = async (req, res) => {
         const monitors = await prisma.monitoring.findMany({
             where: filter,
             include: {
-                owner: { select: { id: true } }
+                owner: { select: { id: true } },
+                personil: {
+                    select: {
+                        id: true,
+                        nama: true,
+                        role: true
+                    },
+                    orderBy: {
+                        role: "asc"
+                    }
+                }
             },
             orderBy: {
                 createdAt: "desc"
