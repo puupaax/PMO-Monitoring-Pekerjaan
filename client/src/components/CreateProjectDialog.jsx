@@ -40,7 +40,7 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
         end_proyek: "",
         start_pemeliharaan: "",
         masa_pemeliharaan: "",
-        end_pemeliharaan: ""
+        end_pemeliharaan: "",
         personil: {
             pyb: [],
             koordinator_ppik: "",
@@ -95,6 +95,12 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                 nama_ppk: formData.nama_ppk,
                 nama_php: formData.nama_php,
                 rencana: formData.rencana,
+                nilai_proyek: formData.nilai_proyek,
+                start_proyek: formData.start_proyek,
+                end_proyek: formData.end_proyek,
+                start_pemeliharaan: formData.start_pemeliharaan,
+                masa_pemeliharaan: formData.masa_pemeliharaan,
+                end_pemeliharaan: formData.end_pemeliharaan,
                 realisasi: formData.realisasi,
                 kendala: formData.kendala,
                 keterangan: formData.keterangan,
