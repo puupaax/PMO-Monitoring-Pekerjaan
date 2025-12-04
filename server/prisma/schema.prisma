@@ -9,10 +9,24 @@ datasource db {
     directUrl = env("DIRECT_URL")
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
 enum WorkspaceRole {
     ADMIN
     MEMBER
 }
+
+enum PersonilRole {
+  PYB
+  KOORDINATOR_PPIK
+  ANGGOTA_PPIK
+  ANGGOTA_PPP
+  KETUA_PHP
+  ANGGOTA_PHP
+}
+
 
 enum Bulan{
     Januari
@@ -76,7 +90,7 @@ model Monitoring {
     nama_proyek     String
     no_kontrak      String
     tgl_kontrak     DateTime?
-    nilai_proyek    Int?
+    nilai_proyek    Decimal? @db.Decimal(15, 2)
     pelaksana_pekerjaan   String
     jangka_waktu    Int
     start_proyek    DateTime?
@@ -84,9 +98,6 @@ model Monitoring {
     start_pemeliharaan  DateTime?
     masa_pemeliharaan   Int?
     end_pemeliharaan    DateTime?     
-    nama_ppp        String
-    nama_ppk        String
-    nama_php        String
     rencana         Decimal @db.Decimal(10, 2)
     realisasi       Decimal @db.Decimal(10, 2)
     deviasi         Decimal @db.Decimal(10, 2)
@@ -104,6 +115,7 @@ model Monitoring {
 
     history             MonitoringHistory[] 
     RencanaKerja        RencanaKerja[]
+    personil PersonilMonitoring[]
 }
 
 model MonitoringHistory {
@@ -115,7 +127,7 @@ model MonitoringHistory {
     nama_proyek     String
     no_kontrak      String
     tgl_kontrak     DateTime?
-    nilai_proyek    Int?
+    nilai_proyek    Decimal? @db.Decimal(15, 2)
     pelaksana_pekerjaan   String
     jangka_waktu    Int
     start_proyek    DateTime?
@@ -124,9 +136,6 @@ model MonitoringHistory {
     start_pemeliharaan  DateTime?
     masa_pemeliharaan   Int?
     end_pemeliharaan    DateTime?    
-    nama_ppp        String
-    nama_ppk        String
-    nama_php        String
     rencana         Decimal @db.Decimal(10, 2)
     realisasi       Decimal @db.Decimal(10, 2)
     deviasi         Decimal @db.Decimal(10, 2)
@@ -153,4 +162,20 @@ model RencanaKerja {
   progress      Decimal @db.Decimal(10,2)
 
   monitoring Monitoring @relation(fields: [monitoring_id], references: [id], onDelete: Cascade)
+}
+
+model PersonilMonitoring {
+  id              String   @id @default(uuid())
+  nama            String
+  role            PersonilRole
+
+  monitoring_id   String
+  monitoring      Monitoring @relation(fields: [monitoring_id], references: [id], onDelete: Cascade)
+
+  // Relasi atasan-bawahan (self-relation)
+  atasan_id       String?
+  atasan          PersonilMonitoring? @relation("HierarchyUp", fields: [atasan_id], references: [id], onDelete: Cascade)
+  bawahan         PersonilMonitoring[] @relation("HierarchyUp")
+
+  createdAt       DateTime @default(now())
 }

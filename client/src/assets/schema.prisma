@@ -60,9 +60,6 @@ model Monitoring {
     no_kontrak      String
     pelaksana_pekerjaan   String
     jangka_waktu    Int
-    nama_ppp        String
-    nama_ppk        String
-    nama_php        String
     rencana         Decimal @db.Decimal(10, 2)
     realisasi       Decimal @db.Decimal(10, 2)
     deviasi         Decimal @db.Decimal(10, 2)
@@ -91,9 +88,6 @@ model MonitoringHistory {
     no_kontrak      String
     pelaksana_pekerjaan   String
     jangka_waktu    Int
-    nama_ppp        String
-    nama_ppk        String
-    nama_php        String
     rencana         Decimal @db.Decimal(10, 2)
     realisasi       Decimal @db.Decimal(10, 2)
     deviasi         Decimal @db.Decimal(10, 2)

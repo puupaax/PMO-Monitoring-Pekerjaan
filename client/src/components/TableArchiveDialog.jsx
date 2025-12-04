@@ -11,6 +11,15 @@ import CreateProjectDialog from "./CreateProjectDialog";
 
 const columnHelper = createColumnHelper();
 
+const formatDate = (iso) => {
+    if (!iso) return "-";
+    return new Date(iso).toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+};
+
 const columns = [
     columnHelper.accessor("nama_proyek", {
         cell: (info) => info.getValue(),
@@ -31,6 +40,14 @@ const columns = [
         </span>
         ),
     }),
+    columnHelper.accessor("nilai_proyek", {
+        header: () => (
+            <span className="flex items-center">
+                <Clock className="mr-2" size={16} /> Nilai Proyek
+            </span>
+        ),
+        cell: (info) => info.getValue(),
+    }),
     columnHelper.accessor("pelaksana_pekerjaan", {
         header: () => (
         <span className="flex items-center">
@@ -41,36 +58,92 @@ const columns = [
     }),
     columnHelper.accessor("jangka_waktu", {
         header: () => (
-        <span className="flex items-center">
-            <Clock className="mr-2" size={16} /> Jangka Waktu Pelaksanaan
-        </span>
+            <span className="flex items-center">
+                <Clock className="mr-2" size={16} /> Jangka Waktu Pelaksanaan
+            </span>
         ),
         cell: (info) => info.getValue(),
     }),
-    columnHelper.accessor("nama_ppp", {
+    columnHelper.accessor("start_proyek", {
         header: () => (
         <span className="flex items-center">
-            <User className="mr-2" size={16} /> PPP
+            <Clock className="mr-2" size={16} /> Start Proyek
         </span>
         ),
-        cell: (info) => info.getValue(),
+        cell: (info) => (
+            <span className="text-sm text-gray-500 dark:text-zinc-300">
+                {formatDate(info.getValue())}
+            </span>
+        ),
     }),
-        columnHelper.accessor("nama_ppk", {
+    columnHelper.accessor("end_proyek", {
         header: () => (
-        <span className="flex items-center">
-            <User className="mr-2" size={16} /> PPIK
-        </span>
+            <span className="flex items-center">
+                <Clock className="mr-2" size={16} /> End Proyek
+            </span>
+            ),
+        cell: (info) => (
+            <span className="text-sm text-gray-500 dark:text-zinc-300">
+                {formatDate(info.getValue())}
+            </span>
         ),
-        cell: (info) => info.getValue(),
     }),
-        columnHelper.accessor("nama_php", {
+    columnHelper.accessor("masa_pemeliharaan", {
         header: () => (
-        <span className="flex items-center">
-            <User className="mr-2" size={16} /> PHP
-        </span>
+            <span className="flex items-center">
+                <Clock className="mr-2" size={16} /> Masa Pemeliharaan
+            </span>
         ),
         cell: (info) => info.getValue(),
     }),
+    columnHelper.accessor("start_pemeliharaan", {
+        header: () => (
+            <span className="flex items-center">
+                <Clock className="mr-2" size={16} /> Start Pemeliharaan
+            </span>
+        ),
+        cell: (info) => (
+            <span className="text-sm text-gray-500 dark:text-zinc-300">
+                {formatDate(info.getValue())}
+            </span>
+        ),
+    }),
+    columnHelper.accessor("end_pemeliharaan", {
+        header: () => (
+            <span className="flex items-center">
+                <Clock className="mr-2" size={16} /> End Pemeliharaan
+            </span>
+        ),
+        cell: (info) => (
+                <span className="text-sm text-gray-500 dark:text-zinc-300">
+                    {formatDate(info.getValue())}
+                </span>
+        ),
+    }),
+    // columnHelper.accessor("nama_ppp", {
+    //     header: () => (
+    //     <span className="flex items-center">
+    //         <User className="mr-2" size={16} /> PPP
+    //     </span>
+    //     ),
+    //     cell: (info) => info.getValue(),
+    // }),
+    //     columnHelper.accessor("nama_ppk", {
+    //     header: () => (
+    //     <span className="flex items-center">
+    //         <User className="mr-2" size={16} /> PPIK
+    //     </span>
+    //     ),
+    //     cell: (info) => info.getValue(),
+    // }),
+    //     columnHelper.accessor("nama_php", {
+    //     header: () => (
+    //     <span className="flex items-center">
+    //         <User className="mr-2" size={16} /> PHP
+    //     </span>
+    //     ),
+    //     cell: (info) => info.getValue(),
+    // }),
         columnHelper.accessor("rencana", {
         header: () => (
         <span className="flex items-center">

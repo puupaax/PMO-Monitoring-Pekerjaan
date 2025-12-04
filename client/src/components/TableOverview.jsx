@@ -49,6 +49,15 @@ const TableOverview = ({ data: externalData, reloadData }) => {
         }
     }, [externalData]);
 
+    const formatDate = (iso) => {
+        if (!iso) return "-";
+        return new Date(iso).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        });
+    };
+
     const columns = [
         columnHelper.accessor("nama_proyek", {
             cell: (info) => info.getValue(),
@@ -69,6 +78,14 @@ const TableOverview = ({ data: externalData, reloadData }) => {
             </span>
             ),
         }),
+        columnHelper.accessor("nilai_proyek", {
+            header: () => (
+            <span className="flex items-center">
+                <Clock className="mr-2" size={16} /> Nilai Proyek
+            </span>
+            ),
+            cell: (info) => info.getValue(),
+        }),
         columnHelper.accessor("pelaksana_pekerjaan", {
             header: () => (
             <span className="flex items-center">
@@ -85,30 +102,86 @@ const TableOverview = ({ data: externalData, reloadData }) => {
             ),
             cell: (info) => info.getValue(),
         }),
-        columnHelper.accessor("nama_ppp", {
+        columnHelper.accessor("start_proyek", {
             header: () => (
             <span className="flex items-center">
-                <User className="mr-2" size={16} /> PPP
+                <Clock className="mr-2" size={16} /> Start Proyek
+            </span>
+            ),
+            cell: (info) => (
+                    <span className="text-sm text-gray-500 dark:text-zinc-300">
+                        {formatDate(info.getValue())}
+                    </span>
+            ),
+        }),
+        columnHelper.accessor("end_proyek", {
+            header: () => (
+            <span className="flex items-center">
+                <Clock className="mr-2" size={16} /> End Proyek
+            </span>
+            ),
+            cell: (info) => (
+                    <span className="text-sm text-gray-500 dark:text-zinc-300">
+                        {formatDate(info.getValue())}
+                    </span>
+            ),
+        }),
+        columnHelper.accessor("masa_pemeliharaan", {
+            header: () => (
+            <span className="flex items-center">
+                <Clock className="mr-2" size={16} /> Masa Pemeliharaan
             </span>
             ),
             cell: (info) => info.getValue(),
         }),
-            columnHelper.accessor("nama_ppk", {
+                columnHelper.accessor("start_pemeliharaan", {
             header: () => (
             <span className="flex items-center">
-                <User className="mr-2" size={16} /> PPIK
+                <Clock className="mr-2" size={16} /> Start Pemeliharaan
             </span>
             ),
-            cell: (info) => info.getValue(),
+            cell: (info) => (
+                    <span className="text-sm text-gray-500 dark:text-zinc-300">
+                        {formatDate(info.getValue())}
+                    </span>
+            ),
         }),
-            columnHelper.accessor("nama_php", {
+        columnHelper.accessor("end_pemeliharaan", {
             header: () => (
             <span className="flex items-center">
-                <User className="mr-2" size={16} /> PHP
+                <Clock className="mr-2" size={16} /> End Pemeliharaan
             </span>
             ),
-            cell: (info) => info.getValue(),
+            cell: (info) => (
+                    <span className="text-sm text-gray-500 dark:text-zinc-300">
+                        {formatDate(info.getValue())}
+                    </span>
+            ),
         }),
+        // columnHelper.accessor("nama_ppp", {
+        //     header: () => (
+        //     <span className="flex items-center">
+        //         <User className="mr-2" size={16} /> PPP
+        //     </span>
+        //     ),
+        //     cell: (info) => info.getValue(),
+        // }),
+        //     columnHelper.accessor("nama_ppk", {
+        //     header: () => (
+        //     <span className="flex items-center">
+        //         <User className="mr-2" size={16} /> PPIK
+        //     </span>
+        //     ),
+        //     cell: (info) => info.getValue(),
+        // }),
+        //     columnHelper.accessor("nama_php", {
+        //     header: () => (
+        //     <span className="flex items-center">
+        //         <User className="mr-2" size={16} /> PHP
+        //     </span>
+        //     ),
+        //     cell: (info) => info.getValue(),
+        // }),
             columnHelper.display({
             id: "actions_rencana",
             header: () => (
@@ -181,6 +254,54 @@ const TableOverview = ({ data: externalData, reloadData }) => {
             </span>
             ),
             cell: (info) => info.getValue(),
+        }),
+        columnHelper.display({
+            id: "personil",
+            header: () => (
+                <span className="flex items-center cursor-default select-none">
+                    <User className="mr-2" size={16} /> Personil
+                </span>
+            ),
+            enableSorting: false,
+            cell: ({ row }) => {
+                const personil = row.original.personil || [];
+                
+                if (personil.length === 0) {
+                    return <span className="text-gray-400 text-sm">-</span>;
+                }
+
+                const groupedPersonil = {
+                    PYB: personil.filter(p => p.role === "PYB"),
+                    KOORDINATOR_PPIK: personil.filter(p => p.role === "KOORDINATOR_PPIK"),
+                    ANGGOTA_PPIK: personil.filter(p => p.role === "ANGGOTA_PPIK"),
+                    ANGGOTA_PPP: personil.filter(p => p.role === "ANGGOTA_PPP"),
+                    KETUA_PHP: personil.filter(p => p.role === "KETUA_PHP"),
+                    ANGGOTA_PHP: personil.filter(p => p.role === "ANGGOTA_PHP"),
+                };
+
+                return (
+                    <div className="text-sm space-y-1 min-w-120">
+                        {groupedPersonil.PYB.length > 0 && (
+                            <div><span className="font-semibold text-blue-600">PYB:</span> {groupedPersonil.PYB.map(p => p.nama).join(", ")}</div>
+                        )}
+                        {groupedPersonil.KOORDINATOR_PPIK.length > 0 && (
+                            <div><span className="font-semibold text-green-600">Koordinator PPIK:</span> {groupedPersonil.KOORDINATOR_PPIK.map(p => p.nama).join(", ")}</div>
+                        )}
+                        {groupedPersonil.ANGGOTA_PPIK.length > 0 && (
+                            <div><span className="font-semibold text-green-600">Anggota PPIK:</span> {groupedPersonil.ANGGOTA_PPIK.map(p => p.nama).join(", ")}</div>
+                        )}
+                        {groupedPersonil.ANGGOTA_PPP.length > 0 && (
+                            <div><span className="font-semibold text-amber-600">Anggota PPP:</span> {groupedPersonil.ANGGOTA_PPP.map(p => p.nama).join(", ")}</div>
+                        )}
+                        {groupedPersonil.KETUA_PHP.length > 0 && (
+                            <div><span className="font-semibold text-purple-600">Ketua PHP:</span> {groupedPersonil.KETUA_PHP.map(p => p.nama).join(", ")}</div>
+                        )}
+                        {groupedPersonil.ANGGOTA_PHP.length > 0 && (
+                            <div><span className="font-semibold text-purple-600">Anggota PHP:</span> {groupedPersonil.ANGGOTA_PHP.map(p => p.nama).join(", ")}</div>
+                        )}
+                    </div>
+                );
+            }
         }),
         columnHelper.display({
             id: "actions",
@@ -354,13 +475,14 @@ const TableOverview = ({ data: externalData, reloadData }) => {
 
                     <tbody className="bg-white divide-y divide-gray-200">
                         {table.getRowModel().rows.map((row) => (
-                            <tr key={row.id} className="hover:bg-gray-50 cursor-pointer"
-                            onClick={() => {
-                                if (cell.column.id !== "actions") {
-                                    setMonitoringId(row.original.id);
-                                    setShowArchive(true);
-                                }
-                            }}>
+                            <tr key={row.id} className="hover:bg-gray-50"
+                            // onClick={() => {
+                            //     if (cell.column.id !== "actions") {
+                            //         setMonitoringId(row.original.id);
+                            //         setShowArchive(true);
+                            //     }
+                            // }}
+                            >
                                 {row.getVisibleCells().map((cell) => (
                                     <td
                                         key={cell.id}
