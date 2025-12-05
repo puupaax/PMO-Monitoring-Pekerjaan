@@ -13,6 +13,7 @@
                     no_kontrak,
                     pelaksana_pekerjaan,
                     jangka_waktu,
+                    tgl_kontrak,
                     start_proyek,
                     end_proyek,
                     start_pemeliharaan,
@@ -67,6 +68,7 @@
                         no_kontrak,
                         pelaksana_pekerjaan,
                         jangka_waktu: Number(jangka_waktu),
+                        tgl_kontrak: new Date(req.body.tgl_kontrak),
                         start_proyek: new Date(req.body.start_proyek),
                         end_proyek: new Date(req.body.end_proyek),
                         start_pemeliharaan: new Date(req.body.start_pemeliharaan),
@@ -92,6 +94,7 @@
                         nama_proyek,
                         no_kontrak,
                         pelaksana_pekerjaan,
+                        tgl_kontrak: new Date(req.body.tgl_kontrak),
                         jangka_waktu: Number(jangka_waktu),
                         nama_ppp,
                         nama_ppk,
@@ -308,16 +311,23 @@
                     id,
                     nama_proyek,
                     no_kontrak,
+                    nilai_proyek,
                     pelaksana_pekerjaan,
                     jangka_waktu,
-                    nama_ppp,
-                    nama_ppk,
-                    nama_php,
+                    masa_pemeliharaan,
+                    // nama_ppp,
+                    // nama_ppk,
+                    // nama_php,
                     rencana,
                     realisasi,
                     keterangan,
                     team_lead,
-                    personil: personilStr
+                    personil: personilStr,
+
+                    start_proyek,
+                    end_proyek,
+                    start_pemeliharaan,
+                    end_pemeliharaan,
                 } = req.body;
 
                 // Parse personil JSON
@@ -348,16 +358,22 @@
                         no_kontrak,
                         pelaksana_pekerjaan,
                         jangka_waktu,
-                        nama_ppp,
-                        nama_ppk,
-                        nama_php,
+                        // nama_ppp,
+                        // nama_ppk,
+                        // nama_php,
                         rencana,
                         realisasi,
                         deviasi,
                         kendala,
                         keterangan,
                         team_lead: userId,
-                        
+
+                        start_proyek: new Date(req.body.start_proyek),
+                        end_proyek: new Date(req.body.end_proyek),
+                        start_pemeliharaan: new Date(req.body.start_pemeliharaan),
+                        end_pemeliharaan: new Date(req.body.end_pemeliharaan),
+                        nilai_proyek,
+                        masa_pemeliharaan,
                     }
                 })
 
@@ -369,12 +385,12 @@
                         pelaksana_pekerjaan,
                         jangka_waktu,
                         start_proyek: new Date(req.body.start_proyek),
-                end_proyek: new Date(req.body.end_proyek),
-                start_pemeliharaan: new Date(req.body.start_pemeliharaan),
-                end_pemeliharaan: new Date(req.body.end_pemeliharaan),
-                nama_ppp,
-                        nama_ppk,
-                        nama_php,
+                        end_proyek: new Date(req.body.end_proyek),
+                        start_pemeliharaan: new Date(req.body.start_pemeliharaan),
+                        end_pemeliharaan: new Date(req.body.end_pemeliharaan),
+                        // nama_ppp,
+                        // nama_ppk,
+                        // nama_php,
                         rencana,
                         realisasi,
                         deviasi,
@@ -382,9 +398,8 @@
                         keterangan,
                         team_lead: userId,
 
-                nilai_proyek,
-                masa_pemeliharaan,
-                            
+                        nilai_proyek,
+                        masa_pemeliharaan,            
                     }
                 })
 

@@ -158,30 +158,30 @@ const TableOverview = ({ data: externalData, reloadData }) => {
                     </span>
             ),
         }),
-        columnHelper.accessor("nama_ppp", {
-            header: () => (
-            <span className="flex items-center">
-                <User className="mr-2" size={16} /> PPP
-            </span>
-            ),
-            cell: (info) => info.getValue(),
-        }),
-            columnHelper.accessor("nama_ppk", {
-            header: () => (
-            <span className="flex items-center">
-                <User className="mr-2" size={16} /> PPIK
-            </span>
-            ),
-            cell: (info) => info.getValue(),
-        }),
-            columnHelper.accessor("nama_php", {
-            header: () => (
-            <span className="flex items-center">
-                <User className="mr-2" size={16} /> PHP
-            </span>
-            ),
-            cell: (info) => info.getValue(),
-        }),
+        // columnHelper.accessor("nama_ppp", {
+        //     header: () => (
+        //     <span className="flex items-center">
+        //         <User className="mr-2" size={16} /> PPP
+        //     </span>
+        //     ),
+        //     cell: (info) => info.getValue(),
+        // }),
+        //     columnHelper.accessor("nama_ppk", {
+        //     header: () => (
+        //     <span className="flex items-center">
+        //         <User className="mr-2" size={16} /> PPIK
+        //     </span>
+        //     ),
+        //     cell: (info) => info.getValue(),
+        // }),
+        //     columnHelper.accessor("nama_php", {
+        //     header: () => (
+        //     <span className="flex items-center">
+        //         <User className="mr-2" size={16} /> PHP
+        //     </span>
+        //     ),
+        //     cell: (info) => info.getValue(),
+        // }),
             columnHelper.display({
             id: "actions_rencana",
             header: () => (

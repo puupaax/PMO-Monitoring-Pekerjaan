@@ -18,16 +18,22 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
         id: "",
         nama_proyek: "",
         no_kontrak: "",
+        nilai_proyek: "",
         pelaksana_pekerjaan: "",
         jangka_waktu: "",
         masa_pemeliharaan: "",
-        nama_ppp: "",
-        nama_ppk: "",
-        nama_php: "",
+        // nama_ppp: "",
+        // nama_ppk: "",
+        // nama_php: "",
         rencana: "",
         realisasi: "",
         kendala: false,
         keterangan: "",
+
+        start_proyek: "",
+        end_proyek: "",
+        start_pemeliharaan: "",
+        end_pemeliharaan: "",
         
     });
 
@@ -35,6 +41,8 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
         rencana: "",
         realisasi: ""
     });
+
+    const formatDate = (d) => d ? new Date(d).toISOString().split("T")[0] : "";
 
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,21 +55,22 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
                 id: projectData.id || "",
                 nama_proyek: projectData.nama_proyek || "",
                 no_kontrak: projectData.no_kontrak || "",
+                nilai_proyek: projectData.nilai_proyek || "",
                 pelaksana_pekerjaan: projectData.pelaksana_pekerjaan || "",
                 jangka_waktu: projectData.jangka_waktu || "",
                 masa_pemeliharaan: projectData.masa_pemeliharaan || "",
-                nama_ppp: projectData.nama_ppp || "",
-                nama_ppk: projectData.nama_ppk || "",
-                nama_php: projectData.nama_php || "",
+                // nama_ppp: projectData.nama_ppp || "",
+                // nama_ppk: projectData.nama_ppk || "",
+                // nama_php: projectData.nama_php || "",
                 rencana: projectData.rencana || "",
                 realisasi: projectData.realisasi || "",
                 kendala: projectData.kendala || false,
                 keterangan: projectData.keterangan || "",
 
-                start_proyek: projectData.start_proyek || "",
-                end_proyek: projectData.end_proyek || "",
-                start_pemeliharaan: projectData.start_pemeliharaan || "",
-                end_pemeliharaan: projectData.end_pemeliharaan || "",
+                start_proyek: formatDate(projectData.start_proyek) || "",
+                end_proyek: formatDate(projectData.end_proyek) || "",
+                start_pemeliharaan: formatDate(projectData.start_pemeliharaan) || "",
+                end_pemeliharaan: formatDate(projectData.end_pemeliharaan) || "",
             });
         }
     }, [isDialogOpen, projectData]);
@@ -77,12 +86,13 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
             setFormData({
                 nama_proyek: "",
                 no_kontrak: "",
+                nilai_proyek: "",
                 pelaksana_pekerjaan: "",
                 jangka_waktu: "",
                 masa_pemeliharaan: "",
-                nama_ppp: "",
-                nama_ppk: "",
-                nama_php: "",
+                // nama_ppp: "",
+                // nama_ppk: "",
+                // nama_php: "",
                 rencana: "",
                 realisasi: "",
                 kendala: false,
@@ -154,6 +164,20 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
                             required
                         />
                     </div>
+
+                    {/* NILAI PROYEK */}
+                    <div>
+                        <label className="block text-sm mb-1">Nilai Proyek</label>
+                        <input
+                            type="number"
+                            value={formData.nilai_proyek}
+                            min={0}
+                            onChange={(e) => setFormData({ ...formData, nilai_proyek: Number(e.target.value) })}
+                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
+                            required
+                        />
+                    </div>
+
 
                     {/* PELAKSANA */}
                     <div>
@@ -260,37 +284,6 @@ const UpdMonitorDialog = ({ isDialogOpen, setIsDialogOpen, projectData, onSucces
                     <div>
                             <label className="block text-sm mb-1">End Pemeliharaan</label>
                             <input type="date" value={formData.end_pemeliharaan} onChange={(e) => setFormData({ ...formData, end_pemeliharaan: e.target.value })} className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mt-1 text-zinc-900 dark:text-zinc-200 text-sm" />
-                    </div>
-
-                    {/* PJ PPP, PPK, PHP */}
-                    <div>
-                        <label className="block text-sm mb-1">Nama PPP</label>
-                        <input
-                            type="text"
-                            value={formData.nama_ppp}
-                            onChange={(e) => setFormData({ ...formData, nama_ppp: e.target.value })}
-                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm mb-1">Nama PPK</label>
-                        <input
-                            type="text"
-                            value={formData.nama_ppk}
-                            onChange={(e) => setFormData({ ...formData, nama_ppk: e.target.value })}
-                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm mb-1">Nama PHP</label>
-                        <input
-                            type="text"
-                            value={formData.nama_php}
-                            onChange={(e) => setFormData({ ...formData, nama_php: e.target.value })}
-                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
-                        />
                     </div>
 
                     {/* RENCANA / REALISASI / DEVIASI */}

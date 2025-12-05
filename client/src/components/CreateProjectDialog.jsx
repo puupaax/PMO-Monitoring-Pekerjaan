@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { XIcon } from "lucide-react";
+import { Download, XIcon } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { set } from "date-fns";
@@ -25,16 +25,16 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
         no_kontrak: "",
         pelaksana_pekerjaan: "",
         jangka_waktu: "",
-        nama_ppp: "",
-        nama_ppk: "",
-        nama_php: "",
+        // nama_ppp: "",
+        // nama_ppk: "",
+        // nama_php: "",
         rencana: "",
         realisasi: "",
         kendala: false,
         keterangan: "",
         rencana_kerja : null,
 
-        // tgl_kontrak: "",
+        tgl_kontrak: "",
         nilai_proyek: "",
         start_proyek: "",
         end_proyek: "",
@@ -89,11 +89,12 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
             const submitData = {
                 nama_proyek: formData.nama_proyek,
                 no_kontrak: formData.no_kontrak,
+                tgl_kontrak: formData.tgl_kontrak,
                 pelaksana_pekerjaan: formData.pelaksana_pekerjaan,
                 jangka_waktu: formData.jangka_waktu,
-                nama_ppp: formData.nama_ppp,
-                nama_ppk: formData.nama_ppk,
-                nama_php: formData.nama_php,
+                // nama_ppp: formData.nama_ppp,
+                // nama_ppk: formData.nama_ppk,
+                // nama_php: formData.nama_php,
                 rencana: formData.rencana,
                 nilai_proyek: formData.nilai_proyek,
                 start_proyek: formData.start_proyek,
@@ -138,15 +139,15 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                 no_kontrak: "",
                 pelaksana_pekerjaan: "",
                 jangka_waktu: "",
-                nama_ppp: "",
-                nama_ppk: "",
-                nama_php: "",
+                // nama_ppp: "",
+                // nama_ppk: "",
+                // nama_php: "",
                 rencana: "",
                 realisasi: "",
                 kendala: false,
                 keterangan: "",
 
-                // tgl_kontrak: "",
+                tgl_kontrak: "",
                 nilai_proyek: "",
                 start_proyek: "",
                 end_proyek: "",
@@ -326,12 +327,18 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                         />
                     </div>
 
+                    <div>
+                        <label className="block text-sm mb-1">Tanggal Kontrak</label>
+                        <input type="date" value={formData.tgl_kontrak} onChange={(e) => setFormData({ ...formData, tgl_kontrak: e.target.value })} className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mt-1 text-zinc-900 dark:text-zinc-200 text-sm" />
+                    </div>
+
                     {/* NILAI PROYEK */}
                     <div>
                         <label className="block text-sm mb-1">Nilai Proyek</label>
                         <input
                             type="number"
                             value={formData.nilai_proyek}
+                            min={0}
                             onChange={(e) => setFormData({ ...formData, nilai_proyek: Number(e.target.value) })}
                             className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
                             required
@@ -445,49 +452,17 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                             <input type="date" disabled value={formData.end_pemeliharaan} onChange={(e) => setFormData({ ...formData, end_pemeliharaan: e.target.value })} className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 mt-1 text-zinc-900 dark:text-zinc-200 text-sm" />
                     </div>
 
-
-                    {/* PJ PPP, PPK, PHP */}
-                    <div>
-                        <label className="block text-sm mb-1">Nama PPP</label>
-                        <input
-                            type="text"
-                            value={formData.nama_ppp}
-                            onChange={(e) => setFormData({ ...formData, nama_ppp: e.target.value })}
-                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm mb-1">Nama PPK</label>
-                        <input
-                            type="text"
-                            value={formData.nama_ppk}
-                            onChange={(e) => setFormData({ ...formData, nama_ppk: e.target.value })}
-                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm mb-1">Nama PHP</label>
-                        <input
-                            type="text"
-                            value={formData.nama_php}
-                            onChange={(e) => setFormData({ ...formData, nama_php: e.target.value })}
-                            className="w-full px-3 py-2 rounded dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700"
-                        />
-                    </div>
-
                     {/* RENCANA / REALISASI / DEVIASI */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm mb-1">Rencana</label>
                             <div className="relative h-10">
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    min={0}
-                                    max={100}
-                                    value={formData.rencana}
+                                <input disabled
+                                    type="number" 
+                                    // step="0.01"
+                                    // min={0}
+                                    // max={100}
+                                    value="0"
                                     onChange={(e) => {
                                         const val = e.target.value;
                                         setFormData({ ...formData, rencana: val });
@@ -508,12 +483,12 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                         <div >
                             <label className="block text-sm mb-1">Realisasi</label>
                             <div className="relative h-10">
-                                <input
+                                <input disabled
                                     type="number"
-                                    step="0.01"
-                                    min={0}
-                                    max={100}
-                                    value={formData.realisasi}
+                                    // step="0.01"
+                                    // min={0}
+                                    // max={100}
+                                    value="0"
                                     onChange={(e) => {
                                         const val = e.target.value;
                                         let error = "";
@@ -756,6 +731,7 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                     {/* RENCANA KERJA (UPLOAD EXCEL) */}
                     <div>
                         <label className="block text-sm mb-1">Rencana Kerja (Excel)</label>
+
                         <input
                             type="file"
                             accept=".xls,.xlsx"
@@ -767,6 +743,9 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen, onSuccess }) => {
                             className="w-full px-3 py-2 rounded dark:bg-zinc-900 border 
                                     border-zinc-300 dark:border-zinc-700"
                         />
+                        <a href="/public/template_rencana_kerja.xlsx" download className="flex items-center gap-1 text-xs text-blue-600 mt-2 hover:underline">
+                        <Download size={14} /> Download Template Rencana Kerja
+                        </a>
 
                         {formData.rencana_kerja && (
                             <p className="text-xs mt-1 text-green-600">
