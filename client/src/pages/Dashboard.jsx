@@ -33,7 +33,7 @@ const Dashboard = () => {
     }, []);
 
     return (
-        <div className='w-full max-w-6xl mx-auto px-6'>
+        <div className='max-w-[1100px] w-full mx-auto px-6'>
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 ">
                 <div>
                     <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-1"> Selamat Datang, {user?.fullName || 'User'} </h1>
