@@ -13,8 +13,14 @@
                     no_kontrak,
                     pelaksana_pekerjaan,
                     jangka_waktu,
+                    tgl_kontrak,
                     start_proyek,
                     end_proyek,
+                    start_pemeliharaan,
+                    end_pemeliharaan,
+                    nama_ppp,
+                    nama_ppk,
+                    nama_php,
                     rencana,
                     realisasi,
                     keterangan,
@@ -62,6 +68,7 @@
                         no_kontrak,
                         pelaksana_pekerjaan,
                         jangka_waktu: Number(jangka_waktu),
+                        tgl_kontrak: new Date(req.body.tgl_kontrak),
                         start_proyek: new Date(req.body.start_proyek),
                         end_proyek: new Date(req.body.end_proyek),
                         start_pemeliharaan: new Date(req.body.start_pemeliharaan),
@@ -84,6 +91,7 @@
                         nama_proyek,
                         no_kontrak,
                         pelaksana_pekerjaan,
+                        tgl_kontrak: new Date(req.body.tgl_kontrak),
                         jangka_waktu: Number(jangka_waktu),
                         rencana: Number(rencana),
                         realisasi: Number(realisasi),
@@ -94,6 +102,10 @@
 
                         nilai_proyek: Number(nilai_proyek),
                         masa_pemeliharaan: Number(masa_pemeliharaan),
+                        start_proyek: new Date(req.body.start_proyek),
+                        end_proyek: new Date(req.body.end_proyek),
+                        start_pemeliharaan: new Date(req.body.start_pemeliharaan),
+                        end_pemeliharaan: new Date(req.body.end_pemeliharaan),
                     }
                 })
 
@@ -293,13 +305,23 @@
                     id,
                     nama_proyek,
                     no_kontrak,
+                    nilai_proyek,
                     pelaksana_pekerjaan,
                     jangka_waktu,
+                    masa_pemeliharaan,
+                    // nama_ppp,
+                    // nama_ppk,
+                    // nama_php,
                     rencana,
                     realisasi,
                     keterangan,
                     team_lead,
-                    personil: personilStr
+                    personil: personilStr,
+
+                    start_proyek,
+                    end_proyek,
+                    start_pemeliharaan,
+                    end_pemeliharaan,
                 } = req.body;
 
                 // Parse personil JSON
@@ -336,7 +358,13 @@
                         kendala,
                         keterangan,
                         team_lead: userId,
-                        
+
+                        start_proyek: new Date(req.body.start_proyek),
+                        end_proyek: new Date(req.body.end_proyek),
+                        start_pemeliharaan: new Date(req.body.start_pemeliharaan),
+                        end_pemeliharaan: new Date(req.body.end_pemeliharaan),
+                        nilai_proyek,
+                        masa_pemeliharaan,
                     }
                 })
 
@@ -358,9 +386,8 @@
                         keterangan,
                         team_lead: userId,
 
-                nilai_proyek,
-                masa_pemeliharaan,
-                            
+                        nilai_proyek,
+                        masa_pemeliharaan,            
                     }
                 })
 
