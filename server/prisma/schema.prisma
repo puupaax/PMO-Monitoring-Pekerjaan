@@ -9,6 +9,10 @@ datasource db {
     directUrl = env("DIRECT_URL")
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
 enum WorkspaceRole {
     ADMIN
     MEMBER
